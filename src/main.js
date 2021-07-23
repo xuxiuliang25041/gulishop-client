@@ -20,6 +20,9 @@ Vue.component('MySwiper', MySwiper)
 Vue.config.productionTip = false
 
 new Vue({
+  beforeCreate() {
+    Vue.prototype.$bus = this
+  },
   render: h => h(App),
   router, //挂载在vue原型上， 这样所有的组件都可以通过$router获取路由器对象， $route获取当前路由信息的对象
   store,  //   
