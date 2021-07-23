@@ -31,13 +31,15 @@ export const reqFloorList = () => {
   })
 }
 
-//搜索search 数据 /list   post   请求体参数   用户传的参数
+//请求search 搜索页面数据， 请求体参数   post
+
 export const reqGoodsListInfo = (searchParams) => {
   return Axios({
-    url: '/list',
-    method: 'post',
-    data: searchParams
-  })
+      url: '/list',
+      method: 'post',
+      data: searchParams
+   })
 }
-//如果要发送请求参数必须携带， 至少得是一个空的对象
+
+//测试，  一开始传一个空对象， 不能不传
 // reqGoodsListInfo({})

@@ -11,21 +11,20 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <!-- 判断 参数内部是否存在categoryName / keyword 存在就显示  为true  -->
+            <!-- 判断是否存在categoryName  为true显示 -->
             <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
             <li class="with-x" v-if="searchParams.keyword">{{searchParams.keyword}}<i @click="removeKeyWord">×</i></li>
-
-            <li class="with-x" v-if="searchParams.trademark">{{searchParams.trademark.split(':')[1]}}<i @click="removeTrademock">×</i></li>
+            <li class="with-x" v-if="searchParams.trademark">{{searchParams.trademark.split(":")[1]}}<i @click="removeTrademark">×</i></li>
             <li class="with-x" 
-            v-for="(prop) in searchParams.props" :key="prop"
-            >{{prop.split(":")[1]}}<i @click='removeProps'>×</i></li>
+            v-for="(prop) in searchParams.props" :key="prop">{{prop.split(":")[1]}}
+              <i @click="removeProps">×</i></li>
           </ul>
         </div>
 
         <!--selector-->
         <SearchSelector 
-          @searchForTrademark="searchForTrademark"
-          @searchForProps="searchForProps"
+          @searchTrademark="searchTrademark"
+          @searchProps="searchProps"
         />
 
         <!--details-->
@@ -118,224 +117,175 @@
 </template>
 
 <script>
-import search from '@/store/modules/search';
-import { mapState, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
   import SearchSelector from './SearchSelector/SearchSelector'
   export default {
     name: 'Search',
 
     data(){
       return {
-        /* 
-          searchParams 是一个对象，里面包含所有的搜索条件，只是一上来的时候大部分搜索条件都是初始化为空的
-          今后想要搜索什么，只需要对某个条件进行修改，然后发送请求就行
-        */
-      // 这个就是我们的初始化搜索参数
         searchParams:{
+          //设置初始化数据， searchParams是一个对象， 包含大部分搜索条件，默认初始化状态
+          //如果需要按照那个条件搜索，就只用修改哪个条件的数据
           category1Id: "",
-          category2Id: "",
+          category2Id: "",          
           category3Id: "",
           categoryName: "",
           keyword: "",
           props: [],
-          trademark: "",
+          trademark: "" ,     
 
-          order: "1:desc",
+          order: "1:desc",//初始化默认的排序规则
           pageNo: 1,
           pageSize: 10,
         }
-
       }
     },
-    /* //在发送请求之前拿到用户传递的参数, (就是需要搜索的条件参数)
-    beforeMount(){
-      //拿到传递的参数，放到this.searchParams里面
-      //不知道传了啥。盲解    点击三级分类定的是query参数
-      let {category1Id, category2Id,category3Id,categoryName} = this.$route.query
-      // 搜索框的是params参数
+
+    /* beforeMount(){
+      //需要获取到用户输入的搜索条件放到this.searchParams里面
+      // 盲解。，   query参数  和 params参数
+      let {category1Id,category2Id,category3Id,categoryName} = this.$route.query
       let {keyword} = this.$route.params
 
-      //...运算符， 相当于最简单的浅拷贝， 
+      //...运算符， 展开操作，相当于最简单的浅拷贝
       let searchParams = {
-        //吧初始化的参数赋给这个对象， 
         ...this.searchParams,
-        //传什么数据  相当于重新赋值
+        //用户点击的搜索条件，有就更改
         category1Id,
         category2Id,
         category3Id,
         categoryName,
-        keyword,
+        keyword
       }
-
-      //1、 功能：把一个对象的可枚举属性放在一个数组里面
-      //2、 参数：这个对象
-      //3、 返回值：可枚举属性组成的数组
-        //优化一下， 吧所有为空的属性删除
-        Object.keys(searchParams).forEach( item => {
-          //判断，是否为空
-          //如果发的参数是一个undefined，那么这个参数是不会带过去的
-          //如果请求里面传的是空串，那么要么删除要么改成undefined
-          if(searchParams[item] === ''){
-            delete searchParams[item]
-          }
-        })
-
-      //吧这个对象赋值给data里面的数据
+      // Object.keys()
+      // //1、 功能：把一个对象的可枚举属性放在一个数组里面
+  //   // //2、 参数：这个对象
+  //   // //3、 返回值：可枚举属性组成的数组
+    // 如果发送的数据是undefined 那么参数是不会带过去的
+    // 但是“” 空串是会带过去的，。 会增加带宽。 浪费资源
+    //
+    Object.keys(searchParams).forEach((item) => {
+      if(categoryName[item] === ''){
+        delete categoryName[item]
+      }
+    })
+      //把添加搜索条件后的数据赋给data中
       this.searchParams = searchParams
     }, */
 
-
-    /* mounted(){
-      this.getGoodsListInfo();
-    }, */
+    mounted(){
+      // this.getGoodsListInfo()
+      console.log(this.$route.query)
+    },
 
     methods:{
-      //请求数据函数
       getGoodsListInfo(){
-        //先传一个空对象。不知道有什么数据
-        /* 
-        我们一开始写的搜索参数是一个空的对象，这个空的对象是我们测试的 时候不知道传什么参数
-        但是可以让我们先获取一批默认的测试数据展示页面
-        这里写空的对象，跳转到search页面，搜索条件什么都没有就是没有按照任何条件搜索过
-        */
+        //先传一个空对象， 获取默认给的数据测试  如果什么都不传就穿个空对象，相当于就是说没有按照给定的条件去搜索
+        // this.$store.dispatch('getGoodsListInfo', {})
+        //
         this.$store.dispatch('getGoodsListInfo', this.searchParams)
-        /* 
-        用户从首页跳转到search页面默认就会按照三级分类名称和关键字进行搜索，这个请求其实就是要第一次搜索用的，那么要在它发送之前把用户传递的参数给获取到 
-        */ 
       },
-    
-    //封装  获取用户 传递的参数， 就点击三级分类和搜索关键字  , 专门处理参数
-    //在发送请求之前拿到用户传递的参数, (就是需要搜索的条件参数)
-    handlerSearchParams(){
-      //拿到传递的参数，放到this.searchParams里面
-      //不知道传了啥。盲解    点击三级分类定的是query参数
-      let {category1Id, category2Id,category3Id,categoryName} = this.$route.query
-      // 搜索框的是params参数
+
+      //获取搜索条件 ，更改数据 专门修改数据  
+      handlerSearchParams(){
+        //需要获取到用户输入的搜索条件放到this.searchParams里面
+      // 盲解。，   query参数  和 params参数
+      let { category1Id, category2Id, category3Id, categoryName } =
+       this.$route.query;
       let {keyword} = this.$route.params
 
-      //...运算符， 相当于最简单的浅拷贝， 
+      //...运算符， 展开操作，相当于最简单的浅拷贝
+        //用户点击的搜索条件，有就更改
       let searchParams = {
-        //吧初始化的参数赋给这个对象， 
         ...this.searchParams,
-        //传什么数据  相当于重新赋值
         category1Id,
         category2Id,
         category3Id,
         categoryName,
-        keyword,
+        keyword
+      };
+      // Object.keys()
+      // //1、 功能：把一个对象的可枚举属性放在一个数组里面
+  //   // //2、 参数：这个对象
+  //   // //3、 返回值：可枚举属性组成的数组
+    // 如果发送的数据是undefined 那么参数是不会带过去的
+    // 但是“” 空串是会带过去的，。 会增加带宽。 浪费资源
+    //
+    Object.keys(searchParams).forEach((item) => {
+      if(categoryName[item] === ""){
+        delete categoryName[item]
       }
-
-      //1、 功能：把一个对象的可枚举属性放在一个数组里面
-      //2、 参数：这个对象
-      //3、 返回值：可枚举属性组成的数组
-        //优化一下， 吧所有为空的属性删除
-        Object.keys(searchParams).forEach( item => {
-          //判断，是否为空
-          //如果发的参数是一个undefined，那么这个参数是不会带过去的
-          //如果请求里面传的是空串，那么要么删除要么改成undefined
-          if(searchParams[item] === ''){
-            delete searchParams[item]
-          }
-        })
-
-      //吧这个对象赋值给data里面的数据
+    })
+      //把添加搜索条件后的数据赋给data中
       this.searchParams = searchParams
-    },
+      },
 
-    //点击删除（搜索条件）的三级分类名称
-    removeCategoryName(){
-      //要做到的： 吧三级分类名称删除， 然后重新请求
-      this.searchParams.categoryName = undefined
-      // this.getGoodsListInfo()  
-      //这样删可以删 但是路径没有改变， 可以重新请求， 而且页面也没有改变
+      // 点击面包屑  删除选中的三级分类名称，query参数的
+      removeCategoryName(){
+        this.searchParams.categoryName = undefined;
+        // 直接改为undefined 路径不会发生变化， 得用路由 push replace router-link 等 
+       
+        this.$router.push({ name: "search", params: this.$route.params });
+        // this.getGoodsListInfo()
+        //监视$route 发生改变watch调用 ，这只是在修改路径， 
+      },
 
-      //方法 路由跳转， push  replace router-link 都可以    //后面这是保存其他数据,只删当前
-      //watch监视了route 路由， 所以路径发生改变就会更新数据
-      this.$router.push({name: 'search', params: this.$route.params})
+      //删除关键字  ， params参数的
+      removeKeyWord(){
+        this.searchParams.keyword = undefined
+        this.$router.push({name: 'search', query: this.$route.query})
 
-    },
+        //全局事件总线  通知header 删除输入框内容  通知谁就emit 发送
+        this.$bus.$emit('clearSearch')
 
-    //点击删除关键字
-    removeKeyWord(){
-      this.searchParams.keyword =  undefined
+      },
 
-      this.$router.push({name:'search', query: this.$route.query})
+      //根据品牌搜索
+      searchTrademark(tm){
+        //根据后台的规定 获取指定形式的数据赋值给data中的trademark
+        this.searchParams.trademark = `${tm.tmId}:${tm.tmName}`
+        this.getGoodsListInfo()
+      },
 
-      //利用全局事件总线 通知header组件 搜索完后清除输入框
-      /* 
-        3步  安装， 就是把总线挂载在vue原型上， 因为vm原型指向的是vue的原型， 组件的原型的原型指向的是vue的原型
-             找到要发送消息的组件， 找到$bus 调用emit 传递数据
-             要干活的组件，。找到bus 调用$on  执行   
-      */
-      this.$bus.$emit('clearKeyWord')
-    },
+      //根据品牌删除
+      removeTrademark(){
+        this.searchParams.trademark = undefined
+          this.getGoodsListInfo()
+      },
 
-    // 根据品牌搜索
-    searchForTrademark(tm){
-      this.searchParams.trademark = `${tm.tmId}:${tm.tmName}`
-      //重新请求
-      this.getGoodsListInfo();
-    },
+      //根据属性搜索
+      searchProps(attr,attrValue){
+        //获取搜索条件， 然后重新请求
+          this.searchParams.props = `${attr.attrId}:${attrValue}:${attr.attrName}`
+          this.getGoodsListInfo()
+      },
 
-    // 删除面包屑里的品牌  删除  然后重新搜索 
-    removeTrademock(){
-      this.searchParams.trademark = undefined
-      //重新请求就行，品牌没有添加到路径, 所以不用考虑路径不更改的情况
-      this.getGoodsListInfo()
-    },
-
-    //根据属性搜索 
-    searchForProps(attr,attrValue){
-      let prop  = `${attr.attrId}:${attrValue}:${attr.attrName}`
-
-      // every
-      // 功能：查看数组当中是不是每一个都符合需求
-      // 参数：类似filter
-      // 返回值：如果所有的都符合需求，返回true 由一个不符合就false
-      // some
-      // 功能：查看数组当中是不是有符合需求的
-      // 参数：类似filter
-      // 返回值：如果有一个符合，返回true 如果所有的都不符合需求，返回false
-
-      //这里用some 判断是不是有相同的   跟prop比较 相同就是 true。
-      let isRepeate = this.searchParams.props.some((item) => item === prop)
-      if(isRepeate) return 
-      //跳转到当前点击的
-      this.searchParams.props.push(prop)
-      //点击路由切换 需要重新请求数据
-      this.getGoodsListInfo()
-    },
-
-    //根据属性删除
-    removeProps(index){
-      //这是数组， 通过下标删除
-      this.searchParams.props.splice(index, 1)
-      this.getGoodsListInfo()
-    }
-
-
-
+      //根据属性删除
+      removeProps(){
+        this.searchParams.props = undefined
+        this.getGoodsListInfo()
+      }
+      
 
     },
 
     computed:{
-      //父组件
       ...mapGetters(['goodsList'])
     },
-
+    
+    // 因为mounted只会执行一次， 所以点了一次之后再点是不会发送请求了，所以变成 监视watch $route变化
     watch:{
-      // 封装 监视点击调用   点击搜索关键字不会发生变化，  因为mounted 发送请求只会发送一次， 所以需要监视，， $route,当前路由的改变，发生改变就请求
-      $route: {
+      $route:{
         immediate: true,
         handler(){
-          //点击三级分类和搜索关键字就调用和重新请求
-          this.handlerSearchParams();
-          this.getGoodsListInfo();
+          //数据变化就调用， 更改数据
+          this.handlerSearchParams()
+          //然后获取请求
+          this.getGoodsListInfo()
         }
       }
     },
-    
-
 
     components: {
       SearchSelector

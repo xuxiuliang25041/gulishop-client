@@ -27,6 +27,6 @@ export default new VueX.Store({
   modules: {
     home,
     user,
-    search
+    search,
   }
 })
