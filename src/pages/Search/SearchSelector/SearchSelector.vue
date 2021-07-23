@@ -4,7 +4,7 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li v-for="(tm, index) in trademarkList" :key="tm.tmId">{{tm.tmName}}</li>
+          <li v-for="(tm) in trademarkList" :key="tm.tmId">{{tm.tmName}}</li>
           
         </ul>
       </div>
@@ -13,7 +13,7 @@
         <a href="javascript:void(0);">更多</a>
       </div>
     </div>
-    <div class="type-wrap" v-for="(attr, index) in attrsList"  :key="attr.attrId">
+    <div class="type-wrap" v-for="(attr) in attrsList"  :key="attr.attrId">
       <div class="fl key">{{attr.attrName}}</div>
       <div class="fl value">
         <ul class="type-list">
