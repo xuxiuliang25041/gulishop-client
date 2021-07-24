@@ -100,7 +100,36 @@
 
             </ul>
           </div>
-          <Pagination></Pagination>
+          <!-- 
+            分页器 组件 用处
+                1.展示当前页码
+                2. 用于展示总条数
+                3. 总页码
+                4. 连续页数
+
+            需要的数据，怎么来
+              展示当前页          父组件有  
+              展示总条数          父组件有
+              展示总页码  （页数）  父组件可以传递总条数和每页的数量 可以计算 一除就是总页数
+              展示连续页数        父组件传  一般是奇数
+           -->
+           <!-- 接收，绑定发过来的自定义事件   父组件搜索条件更新的时候, 需要当前页码修改为1 ,就是刷新 -->
+           <!--        直接绑定请求 数据, 给个形参默认值, page为1  每次点击search搜索里面数据,都会改变页码数据 点击后重置页码为1 才正常不然
+                            不然  不刷新(不重置为1的话)  在某个页码搜索的时候  搜索的条件出来的结果可能会凑不到到那个页码的数量 -->
+          <Pagination
+            :currentPageNo="searchParams.pageNo" 
+            :continueNo="5"
+            :total="goodsListInfo.total"
+            :pageSize="searchParams.pageSize"
+            @changePageNo="getGoodsListInfo" 
+          ></Pagination>
+          <!-- 
+            当前页
+            连续页数量
+            总条数
+            一页放多少，的数量
+
+           -->
         </div>
       </div>
     </div>
@@ -108,7 +137,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import SearchSelector from './SearchSelector/SearchSelector'
 export default {
   name: 'Search',
@@ -127,8 +156,8 @@ export default {
         trademark: "",
 
         order: "1:desc",//初始化默认的排序规则   ：前面的是标志。  后面的是类型。图标的
-        pageNo: 1,
-        pageSize: 10,
+        pageNo: 5,      //当前页， 初始化默认的页码
+        pageSize: 2,   //初始化页面显示数量
       }
     }
   },
@@ -171,9 +200,11 @@ export default {
   }, */
 
   methods: {
-    getGoodsListInfo() {
+    getGoodsListInfo(page = 1) {
       //先传一个空对象， 获取默认给的数据测试  如果什么都不传就穿个空对象，相当于就是说没有按照给定的条件去搜索
       // this.$store.dispatch('getGoodsListInfo', {})
+      //把点击后要修改的页码给父组件修改data数据,
+      this.searchParams.pageNo = page
       //
       this.$store.dispatch('getGoodsListInfo', this.searchParams)
     },
@@ -290,10 +321,20 @@ export default {
     },
 
 
+    //点击分页器 重新设置页码和发送请求  传过来修改页码的参数 赋值给 data里面的pageNo
+    // changePageNo(page){
+    //   this.searchParams.pageNo = page
+    //   this.getGoodsListInfo()
+    // },
+
   },
 
   computed: {
     ...mapGetters(['goodsList']),
+
+    ...mapState({
+      goodsListInfo: state => state.search.goodsListInfo
+    }),
 
     //代码优化
     orderFlag(){
@@ -302,6 +343,7 @@ export default {
     orderType(){
      return this.searchParams.order.split(':')[1]
     },
+    
   },
 
   // 因为mounted只会执行一次， 所以点了一次之后再点是不会发送请求了，所以变成 监视watch $route变化
