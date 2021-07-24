@@ -4,7 +4,7 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li v-for="(tm, index) in trademarkList" :key="tm.tmId" @click="searchTrademark(tm)">{{tm.tmName}}</li>
+          <li v-for="(tm, index) in trademarkList" :key="tm.tmId" @click="searchForTrademark(tm)">{{tm.tmName}}</li>
         </ul>
       </div>
       <div class="ext">
@@ -17,7 +17,7 @@
       <div class="fl value">
         <ul class="type-list">
           <li v-for="(attrValue,index) in attr.attrValueList" :key="index" >
-            <a @click="searchProps(attr, attrValue)">{{attrValue}}</a>
+            <a @click="searchForProps(attr, attrValue)">{{attrValue}}</a>
           </li>
          
         </ul>
@@ -35,15 +35,15 @@ import { mapGetters } from 'vuex'
 
 
     methods:{
-      searchTrademark(tm){
+      searchForTrademark(tm){
         //原本要在这里 修改数据，发送请求
         // 但是 这些父组件都搞定了
-        this.$emit('searchTrademark', tm)
+        this.$emit('searchForTrademark', tm)
 
       },
 
-      searchProps(attr, attrValue){
-        this.$emit('searchProps', attr, attrValue)
+      searchForProps(attr, attrValue){
+        this.$emit('searchForProps', attr, attrValue)
       }
 
     },

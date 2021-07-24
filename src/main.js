@@ -6,6 +6,7 @@ import store from '@/store'
 import '@/mock/mockServer'
 import 'swiper/css/swiper.min.css'
 import MySwiper from '@/conponents/MySwiper'
+import Pagination from '@/conponents/Pagination'
 
 // import "@/api"
 //测试接口请求函数
@@ -16,6 +17,7 @@ import MySwiper from '@/conponents/MySwiper'
 //全局注册
 Vue.component('TypeNav', TypeNav)
 Vue.component('MySwiper', MySwiper)
+Vue.component('Pagination', Pagination)
 
 Vue.config.productionTip = false
 

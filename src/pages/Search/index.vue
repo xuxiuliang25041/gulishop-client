@@ -18,40 +18,57 @@
 
             <li class="with-x" v-for="(prop, index) in searchParams.props" :key="prop">
               {{ prop.split(":")[1]
-              }}<i @click="removeProp(index)">×</i>
+              }}<i @click="removeProps(index)">×</i>
             </li>
-          </ul>  
+          </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector 
-          @searchTrademark="searchTrademark"
-          @searchProps="searchProps"
-        />
+        <SearchSelector @searchForTrademark="searchForTrademark" @searchForProps="searchForProps" />
 
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <!-- 判断 1. 更新背景色 
+                 
+                  1、背景色应该是动态的，根据排序标志动态设定class
+                  2、字体图标
+                    >1、使用哪个字体图标  iconfont
+                    >2、字体图标哪个有 条件和背景色一样，根据排序标志动态设定
+                    >3、如果有字体图标，是向上还是向下，根据排序类型决定   
+                -->
+                <li :class="{active: orderFlag === '1'}">
+                  <a href="javascript:;" @click="changeOrder('1')">
+                    综合
+                    <!-- 判断字体图标哪个有， 条件跟背景色一样， 当前点的是谁就有， 根据排序标志动态设定
+                        判断如果有图标字体的话是向上还是向下， 这要判断它的类型  是升序asc还是降序desc
+                     -->
+                    <i class="iconfont "
+                        v-if="orderFlag === '1'"
+                        :class="{
+                        iconup: orderType === 'asc',
+                        icondown:  orderType === 'desc'
+                      }"
+                      
+                    ></i>
+                    </a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
+                
+                <li :class="{active: orderFlag === '2'}">
+                  <a href="javascript:;" @click="changeOrder('2')">
+                    价格
+                    <i class="iconfont "
+                        v-if="orderFlag === '2'"
+                        :class="{
+                        iconup: orderType === 'asc',
+                        icondown:  orderType === 'desc'
+                      }"
+                    ></i>
+                    </a>
                 </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
-                </li>
+                
               </ul>
             </div>
           </div>
@@ -69,7 +86,7 @@
                     </strong>
                   </div>
                   <div class="attr">
-                    <a target="_blank" href="item.html" >{{goods.title}}</a>
+                    <a target="_blank" href="item.html">{{goods.title}}</a>
                   </div>
                   <div class="commit">
                     <i class="command">已有<span>2000</span>人评价</i>
@@ -80,38 +97,10 @@
                   </div>
                 </div>
               </li>
-              
+
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination></Pagination>
         </div>
       </div>
     </div>
@@ -120,85 +109,85 @@
 
 <script>
 import { mapGetters } from 'vuex'
-  import SearchSelector from './SearchSelector/SearchSelector'
-  export default {
-    name: 'Search',
+import SearchSelector from './SearchSelector/SearchSelector'
+export default {
+  name: 'Search',
 
-    data(){
-      return {
-        searchParams:{
-          //设置初始化数据， searchParams是一个对象， 包含大部分搜索条件，默认初始化状态
-          //如果需要按照那个条件搜索，就只用修改哪个条件的数据
-          category1Id: "",
-          category2Id: "",          
-          category3Id: "",
-          categoryName: "",
-          keyword: "",
-          props: [],
-          trademark: "" ,     
+  data() {
+    return {
+      searchParams: {
+        //设置初始化数据， searchParams是一个对象， 包含大部分搜索条件，默认初始化状态
+        //如果需要按照那个条件搜索，就只用修改哪个条件的数据
+        category1Id: "",
+        category2Id: "",
+        category3Id: "",
+        categoryName: "",
+        keyword: "",
+        props: [],
+        trademark: "",
 
-          order: "1:desc",//初始化默认的排序规则
-          pageNo: 1,
-          pageSize: 10,
-        }
+        order: "1:desc",//初始化默认的排序规则   ：前面的是标志。  后面的是类型。图标的
+        pageNo: 1,
+        pageSize: 10,
       }
+    }
+  },
+
+  /* beforeMount(){
+    //需要获取到用户输入的搜索条件放到this.searchParams里面
+    // 盲解。，   query参数  和 params参数
+    let {category1Id,category2Id,category3Id,categoryName} = this.$route.query
+    let {keyword} = this.$route.params
+
+    //...运算符， 展开操作，相当于最简单的浅拷贝
+    let searchParams = {
+      ...this.searchParams,
+      //用户点击的搜索条件，有就更改
+      category1Id,
+      category2Id,
+      category3Id,
+      categoryName,
+      keyword
+    }
+    // Object.keys()
+    // //1、 功能：把一个对象的可枚举属性放在一个数组里面
+//   // //2、 参数：这个对象
+//   // //3、 返回值：可枚举属性组成的数组
+  // 如果发送的数据是undefined 那么参数是不会带过去的
+  // 但是“” 空串是会带过去的，。 会增加带宽。 浪费资源
+  //
+  Object.keys(searchParams).forEach((item) => {
+    if(categoryName[item] === ''){
+      delete categoryName[item]
+    }
+  })
+    //把添加搜索条件后的数据赋给data中
+    this.searchParams = searchParams
+  }, */
+
+  /* mounted() {
+    // this.getGoodsListInfo()
+    // console.log(this.$route.query)
+  }, */
+
+  methods: {
+    getGoodsListInfo() {
+      //先传一个空对象， 获取默认给的数据测试  如果什么都不传就穿个空对象，相当于就是说没有按照给定的条件去搜索
+      // this.$store.dispatch('getGoodsListInfo', {})
+      //
+      this.$store.dispatch('getGoodsListInfo', this.searchParams)
     },
 
-    /* beforeMount(){
+    //获取搜索条件 ，更改数据 专门修改数据  
+    handlerSearchParams() {
       //需要获取到用户输入的搜索条件放到this.searchParams里面
       // 盲解。，   query参数  和 params参数
-      let {category1Id,category2Id,category3Id,categoryName} = this.$route.query
-      let {keyword} = this.$route.params
-
-      //...运算符， 展开操作，相当于最简单的浅拷贝
-      let searchParams = {
-        ...this.searchParams,
-        //用户点击的搜索条件，有就更改
-        category1Id,
-        category2Id,
-        category3Id,
-        categoryName,
-        keyword
-      }
-      // Object.keys()
-      // //1、 功能：把一个对象的可枚举属性放在一个数组里面
-  //   // //2、 参数：这个对象
-  //   // //3、 返回值：可枚举属性组成的数组
-    // 如果发送的数据是undefined 那么参数是不会带过去的
-    // 但是“” 空串是会带过去的，。 会增加带宽。 浪费资源
-    //
-    Object.keys(searchParams).forEach((item) => {
-      if(categoryName[item] === ''){
-        delete categoryName[item]
-      }
-    })
-      //把添加搜索条件后的数据赋给data中
-      this.searchParams = searchParams
-    }, */
-
-    mounted(){
-      // this.getGoodsListInfo()
-      console.log(this.$route.query)
-    },
-
-    methods:{
-      getGoodsListInfo(){
-        //先传一个空对象， 获取默认给的数据测试  如果什么都不传就穿个空对象，相当于就是说没有按照给定的条件去搜索
-        // this.$store.dispatch('getGoodsListInfo', {})
-        //
-        this.$store.dispatch('getGoodsListInfo', this.searchParams)
-      },
-
-      //获取搜索条件 ，更改数据 专门修改数据  
-      handlerSearchParams(){
-        //需要获取到用户输入的搜索条件放到this.searchParams里面
-      // 盲解。，   query参数  和 params参数
       let { category1Id, category2Id, category3Id, categoryName } =
-       this.$route.query;
-      let {keyword} = this.$route.params
+        this.$route.query;
+      let { keyword } = this.$route.params
 
       //...运算符， 展开操作，相当于最简单的浅拷贝
-        //用户点击的搜索条件，有就更改
+      //用户点击的搜索条件，有就更改
       let searchParams = {
         ...this.searchParams,
         category1Id,
@@ -209,422 +198,461 @@ import { mapGetters } from 'vuex'
       };
       // Object.keys()
       // //1、 功能：把一个对象的可枚举属性放在一个数组里面
-  //   // //2、 参数：这个对象
-  //   // //3、 返回值：可枚举属性组成的数组
-    // 如果发送的数据是undefined 那么参数是不会带过去的
-    // 但是“” 空串是会带过去的，。 会增加带宽。 浪费资源
-    //
-    Object.keys(searchParams).forEach((item) => {
-      if(categoryName[item] === ""){
-        delete categoryName[item]
-      }
-    })
+      //   // //2、 参数：这个对象
+      //   // //3、 返回值：可枚举属性组成的数组
+      // 如果发送的数据是undefined 那么参数是不会带过去的
+      // 但是“” 空串是会带过去的，。 会增加带宽。 浪费资源
+      //
+      Object.keys(searchParams).forEach((item) => {
+        if (searchParams[item] === "") {
+          delete searchParams[item]
+        }
+      })
       //把添加搜索条件后的数据赋给data中
       this.searchParams = searchParams
-      },
+    },
 
-      // 点击面包屑  删除选中的三级分类名称，query参数的
-      removeCategoryName(){
-        this.searchParams.categoryName = undefined;
-        // 直接改为undefined 路径不会发生变化， 得用路由 push replace router-link 等 
-       
-        this.$router.push({ name: "search", params: this.$route.params });
-        // this.getGoodsListInfo()
-        //监视$route 发生改变watch调用 ，这只是在修改路径， 
-      },
+    // 点击面包屑  删除选中的三级分类名称，query参数的
+    removeCategoryName() {
+      this.searchParams.categoryName = undefined;
+      // 直接改为undefined 路径不会发生变化， 得用路由 push replace router-link 等 
 
-      //删除关键字  ， params参数的
-      removeKeyWord(){
-        this.searchParams.keyword = undefined
-        this.$router.push({name: 'search', query: this.$route.query})
+      this.$router.push({ name: "search", params: this.$route.params });
+      // this.getGoodsListInfo()
+      //监视$route 发生改变watch调用 ，这只是在修改路径， 
+    },
 
-        //全局事件总线  通知header 删除输入框内容  通知谁就emit 发送
-        this.$bus.$emit('clearSearch')
+    //删除关键字  ， params参数的
+    removeKeyWord() {
+      this.searchParams.keyword = undefined
+      this.$router.push({ name: 'search', query: this.$route.query })
 
-      },
+      //全局事件总线  通知header 删除输入框内容  通知谁就emit 发送
+      this.$bus.$emit('clearSearch')
 
-      //根据品牌搜索
-      searchTrademark(tm){
-        //根据后台的规定 获取指定形式的数据赋值给data中的trademark
-        this.searchParams.trademark = `${tm.tmId}:${tm.tmName}`
-        this.getGoodsListInfo()
-      },
+    },
 
-      //根据品牌删除
-      removeTrademark(){
-        this.searchParams.trademark = undefined
-          this.getGoodsListInfo()
-      },
+    //根据品牌搜索
+    searchForTrademark(tm) {
+      //根据后台的规定 获取指定形式的数据赋值给data中的trademark
+      this.searchParams.trademark = `${tm.tmId}:${tm.tmName}`
+      this.getGoodsListInfo()
+    },
 
-      //根据属性搜索
-      searchProps(attr,attrValue){
-        //获取搜索条件， 然后重新请求
-          this.searchParams.props = `${attr.attrId}:${attrValue}:${attr.attrName}`
-          this.getGoodsListInfo()
-      },
+    //根据品牌删除
+    removeTrademark() {
+      this.searchParams.trademark = undefined
+      this.getGoodsListInfo()
+    },
 
-      //根据属性删除
-      removeProps(index){
-        this.searchParams.props.splice(index,1)
+    //根据属性搜索
+    searchForProps(attr, attrValue) {
+      //获取搜索条件， 然后重新请求
+      let prop = `${attr.attrId}:${attrValue}:${attr.attrName}`
+
+      //不能重复点击， 判断当前数据里面有没有点击过相同的，有就返回,some  f返回true
+      let isPlace = this.searchParams.props.some((item) => item === prop)
+      if (isPlace) return
+      //为false就是没有， 就跳转到点击的属性
+      this.searchParams.props.push(prop)
+      this.getGoodsListInfo()
+      // this.getGoodsListInfo()
+    },
+
+    //根据属性删除
+    removeProps(index) {
+      this.searchParams.props.splice(index, 1)
+      this.getGoodsListInfo()
+    },
+
+    //点击综合和价格排序
+    //接收一个参数，判断点击的是不是原来那个排序
+    changeOrder(orderFlag){
+      //找到旧的参数  //先获取到原来排序的标志     标志   和 类型
+      let originFlag = this.searchParams.order.split(':')[0]
+      let originType = this.searchParams.order.split(':')[1]
+      let newOrder = ''
+
+      //判断 当前点击的是不是和原来一个标志
+      if(orderFlag === originFlag){
+        //如果是一个标志， 就修改值得类型
+        newOrder = `${originFlag}:${originType === 'asc'? 'desc' : 'asc'}`
+      }else{
+        //如果不是一个标志， 就切换到另一个。 就是从综合切到价格 这样的情况
+        //类型给他一个默认值，自己定的
+        newOrder = `${orderFlag}:${originType = 'asc'}`
+      }
+
+      //更改数据， 赋值
+      this.searchParams.order = newOrder
+      //重新发送请求
+      this.getGoodsListInfo()
+    },
+
+
+  },
+
+  computed: {
+    ...mapGetters(['goodsList']),
+
+    //代码优化
+    orderFlag(){
+     return this.searchParams.order.split(':')[0]
+    },
+    orderType(){
+     return this.searchParams.order.split(':')[1]
+    },
+  },
+
+  // 因为mounted只会执行一次， 所以点了一次之后再点是不会发送请求了，所以变成 监视watch $route变化
+  watch: {
+    $route: {
+      immediate: true,
+      handler() {
+        //数据变化就调用， 更改数据
+        this.handlerSearchParams()
+        //然后获取请求
         this.getGoodsListInfo()
       }
-      
-
-    },
-
-    computed:{
-      ...mapGetters(['goodsList'])
-    },
-    
-    // 因为mounted只会执行一次， 所以点了一次之后再点是不会发送请求了，所以变成 监视watch $route变化
-    watch:{
-      $route:{
-        immediate: true,
-        handler(){
-          //数据变化就调用， 更改数据
-          this.handlerSearchParams()
-          //然后获取请求
-          this.getGoodsListInfo()
-        }
-      }
-    },
-
-    components: {
-      SearchSelector
     }
+  },
+
+  components: {
+    SearchSelector
   }
+}
 </script>
 
 <style lang="less" scoped>
-  .main {
-    margin: 10px 0;
+.main {
+  margin: 10px 0;
 
-    .py-container {
-      width: 1200px;
-      margin: 0 auto;
+  .py-container {
+    width: 1200px;
+    margin: 0 auto;
 
-      .bread {
-        margin-bottom: 5px;
-        overflow: hidden;
+    .bread {
+      margin-bottom: 5px;
+      overflow: hidden;
 
-        .sui-breadcrumb {
-          padding: 3px 15px;
-          margin: 0;
-          font-weight: 400;
-          border-radius: 3px;
-          float: left;
+      .sui-breadcrumb {
+        padding: 3px 15px;
+        margin: 0;
+        font-weight: 400;
+        border-radius: 3px;
+        float: left;
 
-          li {
-            display: inline-block;
-            line-height: 18px;
+        li {
+          display: inline-block;
+          line-height: 18px;
 
-            a {
-              color: #666;
-              text-decoration: none;
-
-              &:hover {
-                color: #4cb9fc;
-              }
-            }
-          }
-        }
-
-        .sui-tag {
-          margin-top: -5px;
-          list-style: none;
-          font-size: 0;
-          line-height: 0;
-          padding: 5px 0 0;
-          margin-bottom: 18px;
-          float: left;
-
-          .with-x {
-            font-size: 12px;
-            margin: 0 5px 5px 0;
-            display: inline-block;
-            overflow: hidden;
-            color: #000;
-            background: #f7f7f7;
-            padding: 0 7px;
-            height: 20px;
-            line-height: 20px;
-            border: 1px solid #dedede;
-            white-space: nowrap;
-            transition: color 400ms;
-            cursor: pointer;
-
-            i {
-              margin-left: 10px;
-              cursor: pointer;
-              font: 400 14px tahoma;
-              display: inline-block;
-              height: 100%;
-              vertical-align: middle;
-            }
+          a {
+            color: #666;
+            text-decoration: none;
 
             &:hover {
-              color: #28a3ef;
+              color: #4cb9fc;
             }
           }
         }
       }
 
-      .details {
-        margin-bottom: 5px;
+      .sui-tag {
+        margin-top: -5px;
+        list-style: none;
+        font-size: 0;
+        line-height: 0;
+        padding: 5px 0 0;
+        margin-bottom: 18px;
+        float: left;
 
-        .sui-navbar {
-          overflow: visible;
-          margin-bottom: 0;
+        .with-x {
+          font-size: 12px;
+          margin: 0 5px 5px 0;
+          display: inline-block;
+          overflow: hidden;
+          color: #000;
+          background: #f7f7f7;
+          padding: 0 7px;
+          height: 20px;
+          line-height: 20px;
+          border: 1px solid #dedede;
+          white-space: nowrap;
+          transition: color 400ms;
+          cursor: pointer;
 
-          .filter {
-            min-height: 40px;
-            padding-right: 20px;
-            background: #fbfbfb;
-            border: 1px solid #e2e2e2;
-            padding-left: 0;
-            border-radius: 0;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+          i {
+            margin-left: 10px;
+            cursor: pointer;
+            font: 400 14px tahoma;
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+          }
 
-            .sui-nav {
-              position: relative;
-              left: 0;
-              display: block;
+          &:hover {
+            color: #28a3ef;
+          }
+        }
+      }
+    }
+
+    .details {
+      margin-bottom: 5px;
+
+      .sui-navbar {
+        overflow: visible;
+        margin-bottom: 0;
+
+        .filter {
+          min-height: 40px;
+          padding-right: 20px;
+          background: #fbfbfb;
+          border: 1px solid #e2e2e2;
+          padding-left: 0;
+          border-radius: 0;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+
+          .sui-nav {
+            position: relative;
+            left: 0;
+            display: block;
+            float: left;
+            margin: 0 10px 0 0;
+
+            li {
               float: left;
-              margin: 0 10px 0 0;
+              line-height: 18px;
 
-              li {
-                float: left;
-                line-height: 18px;
+              a {
+                display: block;
+                cursor: pointer;
+                padding: 11px 15px;
+                color: #777;
+                text-decoration: none;
+              }
 
+              &.active {
                 a {
-                  display: block;
-                  cursor: pointer;
-                  padding: 11px 15px;
-                  color: #777;
-                  text-decoration: none;
-                }
-
-                &.active {
-                  a {
-                    background: #e1251b;
-                    color: #fff;
-                  }
+                  background: #e1251b;
+                  color: #fff;
                 }
               }
             }
           }
         }
+      }
 
-        .goods-list {
-          margin: 20px 0;
+      .goods-list {
+        margin: 20px 0;
 
-          ul {
-            display: flex;
-            flex-wrap: wrap;
+        ul {
+          display: flex;
+          flex-wrap: wrap;
 
-            li {
-              height: 100%;
-              width: 20%;
-              margin-top: 10px;
-              line-height: 28px;
+          li {
+            height: 100%;
+            width: 20%;
+            margin-top: 10px;
+            line-height: 28px;
 
-              .list-wrap {
-                .p-img {
-                  padding-left: 15px;
-                  width: 215px;
-                  height: 255px;
+            .list-wrap {
+              .p-img {
+                padding-left: 15px;
+                width: 215px;
+                height: 255px;
 
-                  a {
-                    color: #666;
+                a {
+                  color: #666;
 
-                    img {
-                      max-width: 100%;
-                      height: auto;
-                      vertical-align: middle;
-                    }
+                  img {
+                    max-width: 100%;
+                    height: auto;
+                    vertical-align: middle;
                   }
                 }
+              }
 
-                .price {
-                  padding-left: 15px;
-                  font-size: 18px;
-                  color: #c81623;
+              .price {
+                padding-left: 15px;
+                font-size: 18px;
+                color: #c81623;
 
-                  strong {
-                    font-weight: 700;
+                strong {
+                  font-weight: 700;
 
-                    i {
-                      margin-left: -5px;
-                    }
+                  i {
+                    margin-left: -5px;
                   }
                 }
+              }
 
-                .attr {
-                  padding-left: 15px;
-                  width: 85%;
-                  overflow: hidden;
-                  margin-bottom: 8px;
-                  min-height: 38px;
+              .attr {
+                padding-left: 15px;
+                width: 85%;
+                overflow: hidden;
+                margin-bottom: 8px;
+                min-height: 38px;
+                cursor: pointer;
+                line-height: 1.8;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+
+                a {
+                  color: #333;
+                  text-decoration: none;
+                }
+              }
+
+              .commit {
+                padding-left: 15px;
+                height: 22px;
+                font-size: 13px;
+                color: #a7a7a7;
+
+                span {
+                  font-weight: 700;
+                  color: #646fb0;
+                }
+              }
+
+              .operate {
+                padding: 12px 15px;
+
+                .sui-btn {
+                  display: inline-block;
+                  padding: 2px 14px;
+                  box-sizing: border-box;
+                  margin-bottom: 0;
+                  font-size: 12px;
+                  line-height: 18px;
+                  text-align: center;
+                  vertical-align: middle;
                   cursor: pointer;
-                  line-height: 1.8;
-                  display: -webkit-box;
-                  -webkit-box-orient: vertical;
-                  -webkit-line-clamp: 2;
+                  border-radius: 0;
+                  background-color: transparent;
+                  margin-right: 15px;
+                }
 
-                  a {
-                    color: #333;
+                .btn-bordered {
+                  min-width: 85px;
+                  background-color: transparent;
+                  border: 1px solid #8c8c8c;
+                  color: #8c8c8c;
+
+                  &:hover {
+                    border: 1px solid #666;
+                    color: #fff !important;
+                    background-color: #666;
                     text-decoration: none;
                   }
                 }
 
-                .commit {
-                  padding-left: 15px;
-                  height: 22px;
-                  font-size: 13px;
-                  color: #a7a7a7;
+                .btn-danger {
+                  border: 1px solid #e1251b;
+                  color: #e1251b;
 
-                  span {
-                    font-weight: 700;
-                    color: #646fb0;
-                  }
-                }
-
-                .operate {
-                  padding: 12px 15px;
-
-                  .sui-btn {
-                    display: inline-block;
-                    padding: 2px 14px;
-                    box-sizing: border-box;
-                    margin-bottom: 0;
-                    font-size: 12px;
-                    line-height: 18px;
-                    text-align: center;
-                    vertical-align: middle;
-                    cursor: pointer;
-                    border-radius: 0;
-                    background-color: transparent;
-                    margin-right: 15px;
-                  }
-
-                  .btn-bordered {
-                    min-width: 85px;
-                    background-color: transparent;
-                    border: 1px solid #8c8c8c;
-                    color: #8c8c8c;
-
-                    &:hover {
-                      border: 1px solid #666;
-                      color: #fff !important;
-                      background-color: #666;
-                      text-decoration: none;
-                    }
-                  }
-
-                  .btn-danger {
+                  &:hover {
                     border: 1px solid #e1251b;
-                    color: #e1251b;
-
-                    &:hover {
-                      border: 1px solid #e1251b;
-                      background-color: #e1251b;
-                      color: white !important;
-                      text-decoration: none;
-                    }
+                    background-color: #e1251b;
+                    color: white !important;
+                    text-decoration: none;
                   }
                 }
               }
             }
           }
         }
+      }
 
-        .page {
-          width: 733px;
-          height: 66px;
-          overflow: hidden;
-          float: right;
+      .page {
+        width: 733px;
+        height: 66px;
+        overflow: hidden;
+        float: right;
 
-          .sui-pagination {
-            margin: 18px 0;
+        .sui-pagination {
+          margin: 18px 0;
 
-            ul {
-              margin-left: 0;
-              margin-bottom: 0;
-              vertical-align: middle;
-              width: 490px;
-              float: left;
+          ul {
+            margin-left: 0;
+            margin-bottom: 0;
+            vertical-align: middle;
+            width: 490px;
+            float: left;
 
-              li {
+            li {
+              line-height: 18px;
+              display: inline-block;
+
+              a {
+                position: relative;
+                float: left;
                 line-height: 18px;
-                display: inline-block;
+                text-decoration: none;
+                background-color: #fff;
+                border: 1px solid #e0e9ee;
+                margin-left: -1px;
+                font-size: 14px;
+                padding: 9px 18px;
+                color: #333;
+              }
 
+              &.active {
                 a {
+                  background-color: #fff;
+                  color: #e1251b;
+                  border-color: #fff;
+                  cursor: default;
+                }
+              }
+
+              &.prev {
+                a {
+                  background-color: #fafafa;
+                }
+              }
+
+              &.disabled {
+                a {
+                  color: #999;
+                  cursor: default;
+                }
+              }
+
+              &.dotted {
+                span {
+                  margin-left: -1px;
                   position: relative;
                   float: left;
                   line-height: 18px;
                   text-decoration: none;
                   background-color: #fff;
-                  border: 1px solid #e0e9ee;
-                  margin-left: -1px;
                   font-size: 14px;
+                  border: 0;
                   padding: 9px 18px;
                   color: #333;
                 }
+              }
 
-                &.active {
-                  a {
-                    background-color: #fff;
-                    color: #e1251b;
-                    border-color: #fff;
-                    cursor: default;
-                  }
-                }
-
-                &.prev {
-                  a {
-                    background-color: #fafafa;
-                  }
-                }
-
-                &.disabled {
-                  a {
-                    color: #999;
-                    cursor: default;
-                  }
-                }
-
-                &.dotted {
-                  span {
-                    margin-left: -1px;
-                    position: relative;
-                    float: left;
-                    line-height: 18px;
-                    text-decoration: none;
-                    background-color: #fff;
-                    font-size: 14px;
-                    border: 0;
-                    padding: 9px 18px;
-                    color: #333;
-                  }
-                }
-
-                &.next {
-                  a {
-                    background-color: #fafafa;
-                  }
+              &.next {
+                a {
+                  background-color: #fafafa;
                 }
               }
             }
+          }
 
-            div {
-              color: #333;
-              font-size: 14px;
-              float: right;
-              width: 241px;
-            }
+          div {
+            color: #333;
+            font-size: 14px;
+            float: right;
+            width: 241px;
           }
         }
       }
     }
   }
+}
 </style>
