@@ -15,10 +15,12 @@
             <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
             <li class="with-x" v-if="searchParams.keyword">{{searchParams.keyword}}<i @click="removeKeyWord">×</i></li>
             <li class="with-x" v-if="searchParams.trademark">{{searchParams.trademark.split(":")[1]}}<i @click="removeTrademark">×</i></li>
-            <li class="with-x" 
-            v-for="(prop) in searchParams.props" :key="prop">{{prop.split(":")[1]}}
-              <i @click="removeProps">×</i></li>
-          </ul>
+
+            <li class="with-x" v-for="(prop, index) in searchParams.props" :key="prop">
+              {{ prop.split(":")[1]
+              }}<i @click="removeProp(index)">×</i>
+            </li>
+          </ul>  
         </div>
 
         <!--selector-->
@@ -262,8 +264,8 @@ import { mapGetters } from 'vuex'
       },
 
       //根据属性删除
-      removeProps(){
-        this.searchParams.props = undefined
+      removeProps(index){
+        this.searchParams.props.splice(index,1)
         this.getGoodsListInfo()
       }
       
