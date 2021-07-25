@@ -33,23 +33,32 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{active : orderFlag === '1'}">
+                  <a href="javascript:;" @click="changeOrder('1')">
+                    综合 
+                    <i 
+                      class="iconfont"
+                      v-if="orderFlag === '1'"
+                      :class="{
+                        iconup: orderType === 'asc',
+                        icondown: orderType === 'desc'
+                      }"
+                    ></i>
+                    </a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                
+                <li :class="{active : orderFlag === '2'}">
+                  <a href="javascript:;"  @click="changeOrder('2')">
+                    价格
+                    <i 
+                      class="iconfont"
+                       v-if="orderFlag === '2'"
+                      :class="{
+                        iconup: orderType === 'asc',
+                        icondown: orderType === 'desc'
+                      }"
+                    ></i>
+                    </a>
                 </li>
               </ul>
             </div>
@@ -82,35 +91,19 @@
               
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <!-- 
+            展示当前页码
+            展示连续页数
+            总条数
+            总页数    总条数 / 每一页数量
+           -->
+          <Pagination
+            :currentPageNo="searchParams.pageNo"
+            :continueNo="5"
+            :total="goodsListInfo.total"
+            :pageSize="searchParams.pageSize"
+            @changePageNo="getGoodsListInfo"
+          ></Pagination>
         </div>
       </div>
     </div>
@@ -139,14 +132,18 @@ import { mapState, mapGetters } from 'vuex';
           keyword: "",
           props: [],
           trademark: "",
-
+          /* 
+            排序是根据order 的值来排的，  ：假设前面1是是代表综合排序， 2是价格排序
+              desc 就是降序，  asc 是升序 
+           */
           order: "1:desc",
-          pageNo: 1,
-          pageSize: 10,
+          pageNo: 5,    //初始化当前页码
+          pageSize: 2,  // 每一页放的数量
         }
 
       }
     },
+
     /* //在发送请求之前拿到用户传递的参数, (就是需要搜索的条件参数)
     beforeMount(){
       //拿到传递的参数，放到this.searchParams里面
@@ -190,14 +187,16 @@ import { mapState, mapGetters } from 'vuex';
     }, */
 
     methods:{
-      //请求数据函数
-      getGoodsListInfo(){
+      //请求数据函数         给请求函数一个形参默认值，为1  每次发送请求的时候就会默认页码跳成1，如果点分页器就覆盖
+      getGoodsListInfo(page = 1){
         //先传一个空对象。不知道有什么数据
         /* 
         我们一开始写的搜索参数是一个空的对象，这个空的对象是我们测试的 时候不知道传什么参数
         但是可以让我们先获取一批默认的测试数据展示页面
         这里写空的对象，跳转到search页面，搜索条件什么都没有就是没有按照任何条件搜索过
         */
+        this.searchParams.pageNo = page
+
         this.$store.dispatch('getGoodsListInfo', this.searchParams)
         /* 
         用户从首页跳转到search页面默认就会按照三级分类名称和关键字进行搜索，这个请求其实就是要第一次搜索用的，那么要在它发送之前把用户传递的参数给获取到 
@@ -311,16 +310,53 @@ import { mapState, mapGetters } from 'vuex';
       //这是数组， 通过下标删除
       this.searchParams.props.splice(index, 1)
       this.getGoodsListInfo()
-    }
+    },
 
+    // 给综合和价格排序
+    changeOrder(orderFlag){
+        //看点击的和当前所在的是不是相同。 是就切换类型（升序还是降序）  不是就切换到当前点击的标志
+        // 获取旧的标志和类型
+        let originFlag = this.searchParams.order.split(':')[0]
+        let originType = this.searchParams.order.split(':')[1]
+        //给它一个新的容器
+        let newArr
 
+        // 判断点击的是哪一个
+        if(orderFlag === originFlag){
+          //如果标志相同 ，。 切换类型
+          newArr = `${orderFlag}:${originType === 'asc'? 'desc' : 'asc'}`
+        }else{
+          // 如果标志不同。 切换到当前标志, 类型给它个默认值
+          newArr = `${orderFlag}:desc`
+        }
+        // 修改数据， 然后重新发送请求
+        this.searchParams.order = newArr
+        this.getGoodsListInfo()
+    },
+
+    //接收子组件传过来的点击信息 ，调用函数， 改变data中searchparams数据，然后重新发送请求
+    // changePageNo(page){
+    //   this.searchParams.pageNo = page
+    //   this.getGoodsListInfo()
+    // }
 
 
     },
 
     computed:{
       //父组件
-      ...mapGetters(['goodsList'])
+      ...mapGetters(['goodsList']),
+      ...mapState({
+        goodsListInfo: state => state.search.goodsListInfo
+      }),
+
+       orderFlag(){
+        return this.searchParams.order.split(':')[0] 
+      },
+
+      orderType(){
+        return this.searchParams.order.split(':')[1]
+      }
     },
 
     watch:{
