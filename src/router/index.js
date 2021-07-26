@@ -2,6 +2,7 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import routes from './routes'
 //声明
 Vue.use(VueRouter)
 
@@ -40,42 +41,8 @@ VueRouter.prototype.replace = function (location, resolved, rejected) {
 
 
 
-import Login from '@/pages/Login'
-import Home from '@/pages/Home'
-import Search from '@/pages/Search'
-import Register from '@/pages/Register'
+
 //向外暴露一个对象
 export default new VueRouter({
-  routes: [
-    {
-      path: '/home',
-      component: Home
-    },
-    {
-      path: '/login',
-      component: Login,
-      meta: {
-        isHidden: true
-      }
-    },
-
-    {
-      path: '/search/:keyword?',
-      component: Search,
-      name: 'search'
-    },
-    {
-      path: '/register',
-      component: Register,
-      meta: {
-        isHidden: true
-      }
-    },
-    
-    //重定向
-    {
-      path: '/',
-      redirect: '/home'
-    }
-  ]
+  routes,
 })
