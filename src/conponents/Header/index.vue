@@ -77,6 +77,8 @@ export default {
             params : { keyword : this.keyword || undefined }
         }
         
+        
+
         if(this.$route.query){
             location.query = this.$route.query
         }

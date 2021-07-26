@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TypeNav />
+    <TypeNav></TypeNav>
     <div class="main">
       <div class="py-container">
         <!--bread-->
@@ -78,7 +78,7 @@
                 <div class="list-wrap">
                   <div class="p-img">
                     <!-- 点击跳转 -->
-                    <router-link to="/detail" + goods.id >
+                    <router-link :to="'/detail/' + goods.id"  >
                       <img :src="goods.defaultImg" />
                     </router-link>
                     <!-- <a href="item.html" target="_blank"><img :src="goods.defaultImg" /></a> -->

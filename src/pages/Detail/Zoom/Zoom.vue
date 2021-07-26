@@ -1,17 +1,75 @@
 <template>
   <div class="spec-preview">
-    <img src="../images/s1.png" />
-    <div class="event"></div>
-    <div class="big">
-      <img src="../images/s1.png" />
+    <img :src="defaultImg.imgUrl" />
+    <div class="event" @mousemove="move"></div>
+    <div class="big" >
+      <img :src="defaultImg.imgUrl" ref="bigImg"/>
     </div>
-    <div class="mask"></div>
+    <div class="mask" ref="mask"></div>
   </div>
 </template>
 
 <script>
   export default {
     name: "Zoom",
+
+    data(){
+      return {
+        defaultIndex:0
+      }
+    },
+
+    props:['imageList'],
+
+    mounted(){
+      //接收事件，执行回调函数，把data的 改成点击的 index下标
+      this.$bus.$on('changeDefaultIndex', (index) => {this.defaultIndex = index})
+    },
+
+    methods:{
+      move(event){
+        //第一步 ， 鼠标动遮罩动
+        //  想要遮罩动， 得计算遮罩的位置  dengyu  鼠标的位置- 遮罩自身的一半
+        //获取鼠标位置      每次进来都在重新获取鼠标的位置，计算遮罩的位置来做到移动效果
+        let moveX = event.offsetX
+        let moveY = event.offsetY
+        // 获取蒙版
+        let mask = this.$refs.mask
+        let bigImg = this.$refs.bigImg
+
+        //获取遮罩的位置
+        let maskX = moveX - mask.offsetWidth / 2
+        let maskY = moveY - mask.offsetHeight / 2
+
+        //判断边界
+        if(maskX < 0){
+          maskX = 0
+        }else if(maskX > mask.offsetWidth){
+          maskX =  mask.offsetWidth
+        }
+
+        if(maskY < 0){
+          maskY = 0
+        }else if(maskY > mask.offsetHeight){
+          maskY = mask.offsetHeight
+        }
+
+        //移动。
+        mask.style.left =  maskX + 'px'
+        mask.style.top =  maskY +'px'
+
+        // 遮罩移动， 放大镜的图片向相反的方向移动2倍距离
+        bigImg.style.left = -2 * maskX + 'px'
+        bigImg.style.top = -2 * maskY + 'px'
+      }
+    },
+    
+    computed:{
+      defaultImg(){
+        return this.imageList[this.defaultIndex] || {}
+      }
+    },
+    
   }
 </script>
 

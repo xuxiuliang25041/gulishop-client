@@ -45,4 +45,11 @@ VueRouter.prototype.replace = function (location, resolved, rejected) {
 //向外暴露一个对象
 export default new VueRouter({
   routes,
+  // 点击跳转默认坐标回调左上角（类似）  就是页面要始终回到最上面
+  scrollBehavior(to, from, savedPosition) {
+    return {
+      x: 0,
+      y: 0
+    }
+  }
 })
