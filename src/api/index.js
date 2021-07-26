@@ -41,3 +41,20 @@ export const reqGoodsListInfo = (searchParams) => {
 }
 //如果要发送请求参数必须携带， 至少得是一个空的对象
 // reqGoodsListInfo({})
+
+// 请求商品详情页  /api/item/{ skuId }  get
+export const reqGoodsDetailInfo = (skuId) => {
+  return Axios({
+    url: `/item/${skuId} `,
+    method: 'get'
+  })
+}
+
+//加入购物车的请求函数
+// /api/cart/addToCart/{ skuId }/{ skuNum }  post
+export const reqAddOrUpdateCartInfo = (skuId, skuNum) => {
+  return Axios({
+    url: `/cart/addToCart/${skuId}/${skuNum}`,
+    method: 'post'
+  })
+}
