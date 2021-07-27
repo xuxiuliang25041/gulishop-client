@@ -208,6 +208,7 @@
                     </strong>
                   </div>
                   <div class="operate">
+                    
                     <a href="javascript:void(0);">加入购物车</a>
                   </div>
                 </div>
@@ -268,7 +269,7 @@
                 套餐价
               </div>
               <div class="price">￥5299</div>
-              <button class="addshopcar">加入购物车</button>
+              <button class="addshopcar" >加入购物车</button>
             </div>
           </div>
         </div>
