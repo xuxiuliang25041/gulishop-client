@@ -98,10 +98,10 @@
           padding: 1px;
         }
 
-        &:hover {
-          border: 2px solid #f60;
-          padding: 1px;
-        }
+        // &:hover {
+        //   border: 2px solid #f60;
+        //   padding: 1px;
+        // }
       }
     }
 

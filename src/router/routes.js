@@ -5,8 +5,15 @@ import Search from '@/pages/Search'
 import Register from '@/pages/Register'
 import Detail from '@/pages/Detail'
 import AddCartSuccess from '@/pages/AddCartSuccess'
+import ShopCart from '@/pages/ShopCart'
 
-export default [{
+export default [
+  {
+    path: '/shopCart',
+    component: ShopCart
+  },
+  
+  {
     path: '/home',
     component: Home
   },
@@ -31,6 +38,7 @@ export default [{
     }
   },
   {
+    // 点击你得让我知道你点的是哪一个，占位，id
     path: '/detail/:skuId',
     component: Detail
   },

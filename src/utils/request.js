@@ -7,6 +7,7 @@
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import store from '@/store'
 
 //不要修改原本的axios  创建axios的实例
 
@@ -19,7 +20,13 @@ const servise = axios.create({
 servise.interceptors.request.use(
   (config) => {
   //config 相当于报文， 拦截后可以修改
-  NProgress.start();
+    NProgress.start();
+    // 从user里面获取唯一标识 属性，  获取到了， 就给请求头里面设置
+    let userTempId = store.state.user.userTempId
+    if (userTempId) {
+      config.headers.userTempId = userTempId
+    }
+
   return config;
   //最后要返回
 })

@@ -58,3 +58,59 @@ export const reqAddOrUpdateCartInfo = (skuId, skuNum) => {
     method: 'post'
   })
 }
+
+  //购物车列表   /api/cart/cartList   get  无参数
+export const reqShopCartList = () => {
+  return Axios({
+    url: '/cart/cartList ',
+    method: 'get'
+  })
+}
+// reqShopCartList()
+
+// 添加购物车的请求  商品数量改动， 增加或者减少 /api/cart/addToCart/{ skuId }/{ skuNum }
+export const reqAddOrUpdateShopCart = (skuId, skuNum) => {
+  return Axios({
+    url: `/cart/addToCart/${skuId}/${skuNum}`,
+    method: 'post',
+
+  })
+}
+
+//点击修改单个状态  /api/cart/checkCart/{skuId}/{isChecked}   get
+export const reqUpdateOneIsCheck = (skuId, isChecked) => {
+  return Axios({
+    url: `/cart/checkCart/${skuId}/${isChecked}`,
+    method: 'get'
+  })
+}
+
+//  点击修改多个状态   post /api/cart/batchCheckCart/{isChecked}  skuIdList  数组  代表修改的商品id列表     请求体参数
+export const reqUpDateAllIsCheck = (isChecked, skuIdList) => {
+  return Axios({
+    url: `/cart/batchCheckCart/${isChecked}`,
+    method: 'post',
+    data: skuIdList
+  })
+}
+
+//点击删除单个的请求   /api/cart/deleteCart/{skuId}   delete
+export const reqDeleteOne = (skuId) => {
+  return Axios({
+    url: `/cart/deleteCart/${skuId}`,
+    method: 'delete',
+  })   
+}
+
+// 删除全部选中的请求  o	DELETE /api/cart/batchDeleteCart   参数： skuIdList 数组 代表修改的商品id列表 请求体参数
+export const reqDeleteAllCart = () => {
+  return Axios({
+    url: `/cart/batchDeleteCart`,
+    method: 'detele',
+    data: skuIdList
+  })
+}
+
+
+
+

@@ -83,7 +83,7 @@
                   @click="skuNum++"
                 >+</a>
                 <a href="javascript:" class="mins"
-                   @click="skuNum > 1? skuNum-- : skuNum"
+                   @click="skuNum > 1? skuNum-- : skuNum=1"
                 >-</a>
               </div>
               <div class="add">
@@ -352,7 +352,7 @@ import { mapGetters } from 'vuex'
       }
     },
 
-    // 通过beforemount 获取路由跳转时携带的params参数
+    // 通过beforemount 获取路由跳转时携带的params参数 存在data中，简化之后的代码
     beforeMount(){
       this.skuId = this.$route.params.skuId
     },
@@ -375,7 +375,7 @@ import { mapGetters } from 'vuex'
 
       },
 
-      //添加购物车的请求  addOrShopCart\
+      //添加购物车的请求  addOrShopCart\    添加之前要判断  不能直接跳转
       async addShopCart(){
         //先发请求， 判断返回的是成功的promise对象还是 失败的 确认是否跳转页面
         
@@ -391,7 +391,7 @@ import { mapGetters } from 'vuex'
           this.$router.push('/addcartsuccess?skuNum=' + this.skuNum  )
 
         } catch (error) {
-          
+          alert('添加失败' + error.message)
         }
       },
     },

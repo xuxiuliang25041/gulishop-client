@@ -53,7 +53,7 @@
           maskY = mask.offsetHeight
         }
 
-        //移动 修改样式   ，每次改变鼠标位置都会触发 ，修改， 做到移动
+        //移动 修改样式   ，每次改变鼠标位置都会触发 ，修改let, top， 做到移动
         mask.style.left = maskX + 'px'
         mask.style.top = maskY + 'px'
 
@@ -67,7 +67,8 @@
   // 计算当前图片
   computed:{
     defaultImg(){
-      return this.imageList[this.defaultIndex] || []
+      //做计算可以防止imageList为空的时候 使用中括号是undefined
+      return this.imageList[this.defaultIndex] || {}
     }
   },
   }
