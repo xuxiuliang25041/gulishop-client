@@ -13,7 +13,11 @@
           </div>
         </div>
         <div class="right-gocart">
+<<<<<<< HEAD
           <router-link :to="'/detail/' + skuInfo.id">查看商品详情</router-link>
+=======
+          <router-link  class="sui-btn btn-xlarge" :to="'/detail/' + skuInfo.id">查看商品详情</router-link>
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
           <!-- <a href="javascript:" class="sui-btn btn-xlarge">查看商品详情</a> -->
           <router-link to="/shopcart">去购物车结算 ></router-link>
           <!-- <a href="javascript:" >去购物车结算 > </a> -->
@@ -26,6 +30,7 @@
 <script>
   export default {
     name: 'AddCartSuccess',
+<<<<<<< HEAD
 
    data(){
      return {
@@ -43,6 +48,22 @@
    //从存储到sessionStorage里面的数据拿出来展示  可以在beforemount里面， mounted也可以
   
 
+=======
+    
+    data(){
+      return {
+        skuNum: '',
+        skuInfo: '',
+      }
+    },
+
+    beforeMount(){
+      //获取query携带的参数 商品数量
+      this.skuNum = this.$route.query.skuNum
+      //sessionStorage存储的商品详情数据
+      this.skuInfo = JSON.parse(sessionStorage.getItem('skuInfo_key'))
+    }
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
   }
 </script>
 

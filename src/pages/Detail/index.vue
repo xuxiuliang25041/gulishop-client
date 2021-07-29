@@ -10,16 +10,26 @@
         <span>{{categoryView.category1Name}}</span>
         <span>{{categoryView.category2Name}}</span>
         <span>{{categoryView.category3Name}}</span>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
       </div>
       <!-- 主要内容区域 -->
       <div class="mainCon">
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
           <!--放大镜效果-->
+<<<<<<< HEAD
           <Zoom :imageList="imageList"/>
           <!-- 小图列表 -->
           <ImageList :imageList="imageList"/>
+=======
+          <Zoom :imageList="imageList" />
+          <!-- 小图列表 -->
+          <ImageList :imageList="imageList" />
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
@@ -64,6 +74,7 @@
           <div class="choose">
             <div class="chooseArea">
               <div class="choosed"></div>
+<<<<<<< HEAD
               <dl v-for="(saleAttr, index) in spuSaleAttrList" :key="saleAttr.id">
                 <dt class="title">{{saleAttr.saleAttrName}}</dt>
                 <dd changepirce="0"
@@ -78,12 +89,38 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
+=======
+              <dl v-for="(saleAttr) in spuSaleAttrList" :key="saleAttr.id">
+                <dt class="title">{{saleAttr.saleAttrName}}</dt>
+                <dd changepirce="0"
+                 :class="{active: saleAttrValue.isChecked === '1'}"
+                  @click="changeChecked( saleAttr.spuSaleAttrValueList, saleAttrValue)" 
+                  v-for="(saleAttrValue,index) in  saleAttr.spuSaleAttrValueList" 
+                  :key="saleAttrValue.id"
+                  >
+                  {{saleAttrValue.saleAttrValueName}}</dd>
+
+              </dl>
+
+            </div>
+            <!-- blur是失去焦点。不判断值改变没有，只要失去焦点，就会触发事件
+                change 是改变的意思，它是包含了blur事件，失去焦点触发，会判断值变没变，变了才触发，不变不触发
+                input 输入的意思， 输入事件，当我们用户输入数据的时候会触发
+                v-model   :value 和 input事件的组合 -->
+            <div class="cartWrap">
+              <div class="controls">
+                    <!-- 有内容的字符串 转数字是NAN  比较都是false 执行后面的 -->
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
                 <input autocomplete="off" class="itxt" v-model="skuNum" @change="skuNum > 1 ? skuNum = skuNum : skuNum = 1">
                 <a href="javascript:" class="plus"
                   @click="skuNum++"
                 >+</a>
                 <a href="javascript:" class="mins"
+<<<<<<< HEAD
                    @click="skuNum > 1? skuNum-- : skuNum=1"
+=======
+                  @click="skuNum > 1? skuNum-- : skuNum = 1"
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
                 >-</a>
               </div>
               <div class="add">
@@ -202,6 +239,10 @@
                     </strong>
                   </div>
                   <div class="operate">
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
                     <a href="javascript:void(0);">加入购物车</a>
                   </div>
                 </div>
@@ -262,7 +303,11 @@
                 套餐价
               </div>
               <div class="price">￥5299</div>
+<<<<<<< HEAD
               <button class="addshopcar">加入购物车</button>
+=======
+              <button class="addshopcar" >加入购物车</button>
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
             </div>
           </div>
         </div>
@@ -339,6 +384,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+<<<<<<< HEAD
   import ImageList from './ImageList/ImageList'
   import Zoom from './Zoom/Zoom'
 
@@ -531,18 +577,254 @@ import { mapGetters } from 'vuex'
               margin-top: 10px;
 
               .title {
-                margin-right: 15px;
-                float: left;
+=======
+import ImageList from './ImageList/ImageList'
+import Zoom from './Zoom/Zoom'
+
+export default {
+  name: 'Detail',
+
+  data() {
+    return {
+      skuId: '',
+      skuNum: 1
+    }
+  },
+
+  //在组件加载之前可以获取到params携带的参数，路径上的
+  beforeMount() {
+    this.skuId = this.$route.params.skuId || undefined
+  },
+
+
+  mounted() {
+    this.getDetailInfo();
+  },
+
+  methods: {
+    getDetailInfo() {
+      this.$store.dispatch('getDetailInfo', this.skuId)
+    },
+
+    //点击 哪个显示哪个。 排他思想
+    changeChecked(saleAttrValueList, saleAttrValue) {
+      saleAttrValueList.forEach((item) => { item.isChecked = '0' })
+      saleAttrValue.isChecked = '1';
+    },
+
+
+    //定义购物车添加成发送请求
+   async addShopCart(){
+         //先发请求
+      //根据返回的结果是成功的promise还是失败的 来确定要不要跳转到添加成功的页面
+      try {
+        this.$store.dispatch('getAddOrUpdateShopCart',{skuId:this.skuId, skuNum:this.skuNum})
+        alert('添加购物车成功，自动跳转到添加成功页面');
+
+        //跳转之前，先把添加购物车成功的页面需要的数据传过去
+        // 路由传参 ,比较简单，商品详情数据也要添加购物车成功页面使用，但是它是一个复杂的数据，，不适合用路由传参
+        // 复杂数据用存储的形式，sessionStorage 页面关闭 就删除
+        //  商品的详情数据， 要先转换成JSON字符串，不然存进去拿不出来
+
+        // 添加成功组件需要商品信息， 存储
+        sessionStorage.setItem('skuInfo_key', JSON.stringify(this.skuInfo))
+        // 成功就代表可以跳转,带上你添加到购物车的数量
+        this.$router.push('/addcartsuccess?skuNum=' + this.skuNum)
+      } catch (error) {
+        // 失败就提示添加失败
+        alert('添加失败', error.message)
+      }
+
+    },
+  },
+
+  //计算获取 面包屑    右边信息内容     颜色，样式
+  computed: {
+    ...mapGetters(['categoryView', 'skuInfo', 'spuSaleAttrList']),
+    //简化，从skuImageList 里面获取每一张小图  这里大图小图用的是同一张
+    imageList() {
+      return this.skuInfo.skuImageList || []
+    }
+  },
+
+  components: {
+    ImageList,
+    Zoom
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.detail {
+  .con {
+    width: 1200px;
+    margin: 15px auto 0;
+
+    .conPoin {
+      padding: 9px 15px 9px 0;
+
+      & > span + span:before {
+        content: "/\00a0";
+        padding: 0 5px;
+        color: #ccc;
+      }
+    }
+
+    .mainCon {
+      overflow: hidden;
+      margin: 5px 0 15px;
+
+      .previewWrap {
+        float: left;
+        width: 400px;
+        position: relative;
+      }
+
+      .InfoWrap {
+        width: 700px;
+        float: right;
+
+        .InfoName {
+          font-size: 14px;
+          line-height: 21px;
+          margin-top: 15px;
+        }
+
+        .news {
+          color: #e12228;
+          margin-top: 15px;
+        }
+
+        .priceArea {
+          background: #fee9eb;
+          padding: 7px;
+          margin: 13px 0;
+
+          .priceArea1 {
+            overflow: hidden;
+            line-height: 28px;
+            margin-top: 10px;
+
+            .title {
+              float: left;
+              margin-right: 15px;
+            }
+
+            .price {
+              float: left;
+              color: #c81623;
+
+              i {
+                font-size: 16px;
               }
 
-              .fixWidth {
-                width: 520px;
-                float: left;
+              em {
+                font-size: 24px;
+                font-weight: 700;
+              }
+
+              span {
+                font-size: 12px;
+              }
+            }
+
+            .remark {
+              float: right;
+            }
+          }
+
+          .priceArea2 {
+            overflow: hidden;
+            line-height: 28px;
+            margin-top: 10px;
+
+            .title {
+              margin-right: 15px;
+              float: left;
+            }
+
+            .fixWidth {
+              width: 520px;
+              float: left;
+
+              .red-bg {
+                background: #c81623;
+                color: #fff;
+                padding: 3px;
+              }
+
+              .t-gray {
                 color: #999;
               }
             }
           }
+        }
 
+        .support {
+          border-bottom: 1px solid #ededed;
+          padding-bottom: 5px;
+
+          .supportArea {
+            overflow: hidden;
+            line-height: 28px;
+            margin-top: 10px;
+
+            .title {
+              margin-right: 15px;
+              float: left;
+            }
+
+            .fixWidth {
+              width: 520px;
+              float: left;
+              color: #999;
+            }
+          }
+        }
+
+        .choose {
+          .chooseArea {
+            overflow: hidden;
+            line-height: 28px;
+            margin-top: 10px;
+
+            dl {
+              overflow: hidden;
+              margin: 13px 0;
+
+              dt {
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
+                margin-right: 15px;
+                float: left;
+              }
+
+<<<<<<< HEAD
+              .fixWidth {
+                width: 520px;
+                float: left;
+                color: #999;
+=======
+              dd {
+                float: left;
+                margin-right: 5px;
+                color: #666;
+                line-height: 24px;
+                padding: 2px 14px;
+                border-top: 1px solid #eee;
+                border-right: 1px solid #bbb;
+                border-bottom: 1px solid #bbb;
+                border-left: 1px solid #eee;
+
+                &.active {
+                  color: green;
+                  border: 1px solid green;
+                }
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
+              }
+            }
+          }
+
+<<<<<<< HEAD
           .choose {
             .chooseArea {
               overflow: hidden;
@@ -630,12 +912,67 @@ import { mapGetters } from 'vuex'
                   line-height: 36px;
                   display: block;
                 }
+=======
+          .cartWrap {
+            .controls {
+              width: 48px;
+              position: relative;
+              float: left;
+              margin-right: 15px;
+
+              .itxt {
+                width: 38px;
+                height: 37px;
+                border: 1px solid #ddd;
+                color: #555;
+                float: left;
+                border-right: 0;
+                text-align: center;
+              }
+
+              .plus,
+              .mins {
+                width: 15px;
+                text-align: center;
+                height: 17px;
+                line-height: 17px;
+                background: #f1f1f1;
+                color: #666;
+                position: absolute;
+                right: -8px;
+                border: 1px solid #ccc;
+              }
+
+              .mins {
+                right: -8px;
+                top: 19px;
+                border-top: 0;
+              }
+
+              .plus {
+                right: -8px;
+              }
+            }
+
+            .add {
+              float: left;
+
+              a {
+                background-color: #e1251b;
+                padding: 0 25px;
+                font-size: 16px;
+                color: #fff;
+                height: 36px;
+                line-height: 36px;
+                display: block;
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
               }
             }
           }
         }
       }
     }
+<<<<<<< HEAD
 
     .product-detail {
       width: 1200px;
@@ -720,6 +1057,92 @@ import { mapGetters } from 'vuex'
                         padding: 2px 14px;
                         line-height: 18px;
                       }
+=======
+  }
+
+  .product-detail {
+    width: 1200px;
+    margin: 30px auto 0;
+    overflow: hidden;
+
+    .aside {
+      width: 210px;
+      float: left;
+      border: 1px solid #ccc;
+
+      .tabWraped {
+        height: 40px;
+
+        h4 {
+          border-top: 3px solid #fff;
+          float: left;
+          line-height: 37px;
+          width: 105px;
+          text-align: center;
+          border-bottom: 1px solid #ccc;
+
+          &.active {
+            border-top: 3px solid #e1251b;
+            border-bottom: 0;
+            font-weight: normal;
+          }
+        }
+      }
+
+      .tabContent {
+        padding: 10px;
+
+        .tab-pane {
+          display: none;
+
+          &.active {
+            display: block;
+          }
+
+          &:nth-child(1) {
+            .partList {
+              overflow: hidden;
+
+              li {
+                width: 50%;
+                float: left;
+                border-bottom: 1px dashed #ededed;
+                line-height: 28px;
+              }
+            }
+
+            .goodsList {
+              & > li {
+                margin: 5px 0 15px;
+                border-bottom: 1px solid #ededed;
+                padding-bottom: 5px;
+
+                .list-wrap {
+                  .p-img {
+                    text-align: center;
+
+                    img {
+                      width: 152px;
+                    }
+                  }
+
+                  .price {
+                    font-size: 16px;
+                    color: #c81623;
+                  }
+
+                  .operate {
+                    text-align: center;
+                    margin: 5px 0;
+
+                    a {
+                      background-color: transparent;
+                      border: 1px solid #8c8c8c;
+                      color: #8c8c8c;
+                      display: inline-block;
+                      padding: 2px 14px;
+                      line-height: 18px;
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
                     }
                   }
                 }
@@ -728,6 +1151,7 @@ import { mapGetters } from 'vuex'
           }
         }
       }
+<<<<<<< HEAD
 
       .detail {
         width: 980px;
@@ -905,9 +1329,191 @@ import { mapGetters } from 'vuex'
               }
             }
 
+=======
+    }
+
+    .detail {
+      width: 980px;
+      float: right;
+
+      .fitting {
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+
+        .kt {
+          border-bottom: 1px solid #ddd;
+          background: #f1f1f1;
+          color: #333;
+          padding: 5px 0 5px 15px;
+        }
+
+        .good-suits {
+          height: 170px;
+          padding-top: 10px;
+
+          .master {
+            width: 127px;
+            height: 165px;
+            text-align: center;
+            position: relative;
+            float: left;
+
+            img {
+              width: 87px;
+            }
+
+            p {
+              color: #c81623;
+              font-size: 16px;
+              font-weight: 700;
+            }
+
+            i {
+              position: absolute;
+              top: 48px;
+              right: -25px;
+              font-size: 16px;
+            }
+          }
+
+          .suits {
+            width: 668px;
+            height: 165px;
+            float: left;
+
+            .suitsItem {
+              float: left;
+              width: 127px;
+              padding: 0 20px;
+              text-align: center;
+
+              img {
+                width: 120px;
+                height: 130px;
+              }
+
+              p {
+                font-size: 12px;
+              }
+
+              label {
+                display: block;
+                position: relative;
+
+                input {
+                  vertical-align: middle;
+                }
+
+                span {
+                  vertical-align: middle;
+                }
+              }
+            }
+          }
+
+          .result {
+            border-left: 1px solid #ddd;
+            width: 153px;
+            height: 165px;
+            padding-left: 20px;
+            float: left;
+
+            .num {
+              font-size: 14px;
+              margin-bottom: 10px;
+              margin-top: 10px;
+            }
+
+            .price-tit {
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+
+            .price {
+              color: #b1191a;
+              font-size: 16px;
+              margin-bottom: 10px;
+            }
+
+            .addshopcar {
+              background-color: #e1251b;
+              border: 1px solid #e1251b;
+              padding: 10px 25px;
+              font-size: 16px;
+              color: #fff;
+              display: inline-block;
+              box-sizing: border-box;
+            }
+          }
+        }
+      }
+
+      .intro {
+        .tab-wraped {
+          background: #ededed;
+          // border: 1px solid #ddd;
+          overflow: hidden;
+
+          li {
+            float: left;
+
+            & + li > a {
+              border-left: 1px solid #ddd;
+            }
+
+            &.active {
+              a {
+                // border: 0;
+                background: #e1251b;
+                color: #fff;
+              }
+            }
+
+            a {
+              display: block;
+              height: 40px;
+              line-height: 40px;
+              padding: 0 11px;
+              text-align: center;
+              color: #666;
+              background: #fcfcfc;
+              border-top: 1px solid #ddd;
+              border-bottom: 1px solid #ddd;
+            }
+          }
+        }
+
+        .tab-content {
+          .tab-pane {
+            display: none;
+
+            &.active {
+              display: block;
+            }
+
+            &:nth-child(1) {
+              .goods-intro {
+                padding-left: 10px;
+
+                li {
+                  margin: 10px 0;
+                }
+              }
+
+              .intro-detail {
+                img {
+                  width: 100%;
+                }
+              }
+            }
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
           }
         }
       }
     }
   }
+<<<<<<< HEAD
+=======
+}
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 </style>

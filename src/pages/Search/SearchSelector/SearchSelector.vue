@@ -4,9 +4,7 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li @click="searchForTrademark(tm)"
-           v-for="(tm) in trademarkList" :key="tm.tmId">{{tm.tmName}}</li>
-          
+          <li v-for="(tm, index) in trademarkList" :key="tm.tmId" @click="searchForTrademark(tm)">{{tm.tmName}}</li>
         </ul>
       </div>
       <div class="ext">
@@ -14,13 +12,14 @@
         <a href="javascript:void(0);">更多</a>
       </div>
     </div>
-    <div class="type-wrap" v-for="(attr) in attrsList"  :key="attr.attrId">
+    <div class="type-wrap" v-for="(attr, index) in attrsList" :key="attr.attrId">
       <div class="fl key">{{attr.attrName}}</div>
       <div class="fl value">
         <ul class="type-list">
-          <li v-for="(attrValue,index) in attr.attrValueList" :key="index" @click="searchForProps(attr,attrValue)">
-            <a>{{attrValue}}</a>
+          <li v-for="(attrValue,index) in attr.attrValueList" :key="index" >
+            <a @click="searchForProps(attr, attrValue)">{{attrValue}}</a>
           </li>
+         
         </ul>
       </div>
       <div class="fl ext"></div>
@@ -34,28 +33,24 @@ import { mapGetters } from 'vuex'
   export default {
     name: 'SearchSelector',
 
-    //vuex里面的数据组件都可以拿到
-    computed:{
-      //这是子组件的数据
-      ...mapGetters(['attrsList','trademarkList'])
-    },
 
     methods:{
-      //本身在这里需要修改searchParams数据，然后发请求
-      // 但是一套都是在父组件的， 所以 实现子与父之前通信， 让父组件修改，和发请求
-      //自定义事件
-     searchForTrademark(tm){
-       //吧需要点击的当前信息传给父组件
-       this.$emit('searchForTrademark', tm)
-     },
+      searchForTrademark(tm){
+        //原本要在这里 修改数据，发送请求
+        // 但是 这些父组件都搞定了
+        this.$emit('searchForTrademark', tm)
 
-      // 点击属性的值 函数， 吧当前点击信息传递给父组件 
-      searchForProps(attr,attrValue){
+      },
+
+      searchForProps(attr, attrValue){
         this.$emit('searchForProps', attr, attrValue)
       }
 
     },
 
+    computed:{
+      ...mapGetters(['attrsList', 'trademarkList'])
+    }
   }
 </script>
 

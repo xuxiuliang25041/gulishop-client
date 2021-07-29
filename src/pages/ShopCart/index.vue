@@ -10,6 +10,7 @@
         <div class="cart-th5">小计（元）</div>
         <div class="cart-th6">操作</div>
       </div>
+<<<<<<< HEAD
       <!--   遍历的是外层的  如果有购物券之类的  -->
       <div class="cart-body"  v-for="(cart, index) in shopCartList" :key="index">
         <ul class="cart-list" v-for="(cartInfo) in cart.cartInfoList" :key="cartInfo.skuId">
@@ -17,12 +18,21 @@
             <input type="checkbox" name="chk_list"
                  :checked="cartInfo.isChecked"
                   @click="updateOneIsCheck(cartInfo)"
+=======
+      <div class="cart-body" v-for="(cart, index) in shopCartList" :key="index">
+        <ul class="cart-list" v-for="(cartInfo) in cart.cartInfoList" :key="cartInfo.skuId">
+          <li class="cart-list-con1">
+            <input type="checkbox" name="chk_list"
+             :checked="cartInfo.isChecked"
+             @click="changeOneCheck(cartInfo)"
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
              >
           </li>
           <li class="cart-list-con2">
             <img :src="cartInfo.imgUrl">
             <div class="item-msg">{{cartInfo.skuName}}</div>
           </li>
+<<<<<<< HEAD
           <!-- <li class="cart-list-con3">
             <div class="item-txt">语音升级款</div>
           </li> -->
@@ -52,11 +62,41 @@
         </ul>
 
         
+=======
+          
+          <li class="cart-list-con4">
+            <span class="price">{{cartInfo.cartPrice}}</span>
+          </li>
+          <li class="cart-list-con5">
+            <a href="javascript:void(0)" class="mins"
+                @click="changeNum(-1, cartInfo)"
+            >-</a>
+              <!--                        change事件  点击传参 当前输入的值减去原来的值 -->
+            <input autocomplete="off" type="text" :value="cartInfo.skuNum" minnum="1" class="itxt" @change="changeNum($event.target.value*1 - cartInfo.skuNum, cartInfo)">
+            <a href="javascript:void(0)" class="plus"
+                 @click="changeNum(1, cartInfo)"
+            >+</a>
+          </li>
+          <li class="cart-list-con6">
+            <span class="sum">{{cartInfo.skuNum * cartInfo.cartPrice}}</span>
+          </li>
+          <li class="cart-list-con7">
+            <a href="javascript:;" class="sindelet" @click="deleteOne(cartInfo)">删除</a>
+            <br>
+            <a href="javascript:;">移到收藏</a>
+          </li>
+        </ul>
+
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
       </div>
     </div>
     <div class="cart-tool">
       <div class="select-all">
+<<<<<<< HEAD
         <input class="chooseAll" type="checkbox" v-model="isCheckAll" >
+=======
+        <input class="chooseAll" type="checkbox" v-model="checkAll">
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
         <span>全选</span>
       </div>
       <div class="option">
@@ -85,6 +125,7 @@ import { mapState } from 'vuex'
     name: 'ShopCart',
 
     mounted(){
+<<<<<<< HEAD
       this.getShopCartList()
     },
 
@@ -153,19 +194,91 @@ import { mapState } from 'vuex'
             }
           })
         });
+=======
+      this.getCartListInfo()
+    },
+
+    methods:{
+      getCartListInfo(){
+        this.$store.dispatch('getCartListInfo')
+      },
+
+      //修改购物车数量
+      async changeNum(disNum, cartInfo){
+          //disNum 差值， 可能会有问题， 当原来的值加上差值 就是最终显示的值， 当这个值小于一要修正
+          if(cartInfo.skuNum + disNum < 1){
+            disNum = 1 - cartInfo.skuNum
+          }
+
+          //然后dispatch   重新请求页面
+          try {
+            console.log(11111111) 
+            await this.$store.dispatch('getAddOrUpdateShopCart', {skuId: cartInfo.skuId, skuNum: disNum})
+             alert('修改购物车数量成功');
+            this.getCartListInfo()
+          } catch (error) {
+            alert('修改数量失败')
+          }
+      },
+
+    // 改变单个状态
+     async changeOneCheck(cartInfo){
+          try {
+            //dispatch 跟vuex联系， 如果为true 改成0 
+            await this.$store.dispatch('changeOneCheck', {skuId:cartInfo.skuId, isChecked:cartInfo.isChecked ? 0 : 1})
+            alert('修改单个状态成功')
+            this.getCartListInfo()
+          } catch (error) {
+            alert('单个状态失败')
+          }
+      },
+
+       //删除单个
+     async deleteOne(cartInfo){
+        //skuId 是动态的， 点那个就是哪个
+          try {
+            await this.$store.dispatch('deleteOneCart', cartInfo.skuId)
+            console.log(111111)
+            alert('删除单个成功')
+            this.getCartListInfo()
+          } catch (error) {
+            alert('删除单个但是失败了额 ');
+          }
+      },
+
+      //删除多个
+      async deleteAllCart(){
+        //创建一个空数组 ，存放id
+        let skuIdList = []
+          //判断是否选中 遍历所有，  forEach 
+          this.shopCartList.forEach((item) => {
+            item.cartInfoList.forEach((item1) => {
+              if( item1.isChecked){
+                  skuIdList.push(item1.skuId)
+              }
+            })
+          })
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 
           try {
             await this.$store.dispatch('deleteAllCart', skuIdList)
             alert('删除全部成功')
+<<<<<<< HEAD
             this.getShopCartList()
           } catch (error) {
             alert('删除全部的失败')
+=======
+            this.getCartListInfo()
+          } catch (error) {
+            alert('删除全部失败')
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
           }
       }
 
     },
 
     computed:{
+<<<<<<< HEAD
       ...mapState({
         shopCartList: state => state.shopcart.shopCartList 
       }),
@@ -254,12 +367,87 @@ import { mapState } from 'vuex'
 
           }
       } 
+=======
+      // 吧 shopCartList 简化出来一点
+      ...mapState({
+        shopCartList : state => state.shopcart.shopCartList
+      }),
+
+      //计算 一共商品数量
+      checkedNum(){
+        // 遍历累加 ，reduce   先就把外层当做遍历 ，， 内层处理
+        //最后这个数组的遍历的值是要返回出去的
+       return this.shopCartList.reduce((pre, item) => {
+        pre  +=  item.cartInfoList.reduce((pre1, item1) => {
+            if(item1.isChecked){
+               pre1 += item1.skuNum
+            }
+            return pre1
+          },0)
+          //返回它  外层接收到
+        return pre
+        },0)
+      },
+
+      //计算总价
+      allMoney(){
+        //reduce
+        return this.shopCartList.reduce((pre, item) =>{
+             pre += item.cartInfoList.reduce((pre1,item1) => {
+                if(item1.isChecked){
+                  pre1 += item1.skuNum * item1.cartPrice
+                }
+                return pre1
+              },0)
+                return pre
+        },0)
+      },
+      
+      // 计算全选框， get set 方法 
+      checkAll:{
+        get(){
+          //全选 就是判断有没有全部选中，isChecked  用every方法， 返回的是布尔值
+          return this.shopCartList.every((item) => item.cartInfoList.every((item1) => item1.isChecked))
+
+        },
+       async set(value){
+          //监视过全选， 修改多个状态 set
+          //val 就是当前的值，点击的值
+          //遍历 判断 isChecked 为flase 的 吧它的skuId 传到一个空数组 
+          //因为数据里面isChecked是1 或者0   要转一下
+          let isChecked = value? 1 : 0
+          // let skuIdList = []  // 避免遍历是undefined 给个默认的值 空数组  forEach遍历的
+
+        let skuIdList = this.shopCartList.reduce((pre, item) => {
+                pre.push(...item.cartInfoList.reduce((pre1, item1) => {
+                  if(item1.isChecked !== isChecked){
+                    pre1.push(item1.skuId)
+                  }
+                  return pre1
+                },[]))
+                return pre
+          },[]);
+            
+          try {
+            await this.$store.dispatch('changeAllCart', {isChecked, skuIdList,})
+            alert('修改多个成功')
+            this.getCartListInfo()
+          } catch (error) {
+            alert('失败  修改多个有问题')
+          }
+
+        }
+      },
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 
      
 
     },
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
   }
 </script>
 
@@ -344,6 +532,7 @@ import { mapState } from 'vuex'
             }
           }
 
+<<<<<<< HEAD
          /*  .cart-list-con3 {
             width: 20.8333%;
 
@@ -351,6 +540,9 @@ import { mapState } from 'vuex'
               text-align: center;
             }
           } */
+=======
+         
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 
           .cart-list-con4 {
             width: 10%;

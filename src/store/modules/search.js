@@ -6,31 +6,34 @@ const state = {
 }
 
 const mutations = {
-  SECEIVE_GETGOODSLISTINFO(state, goodsListInfo) {
+  RECEIVE_GOODSLISTINFO(state, goodsListInfo) {
     state.goodsListInfo = goodsListInfo
   }
 }
 
 const actions = {
-  //第一个数据必须是context 非要写占位   第二个参数一个就写一个， 传递多个就传对象，必须封装在一个对象里面传递
+  // 第一个参数一定要是context， 必须占位， 如果vue中有参数要传递过来，只能是一个，多个要合并成对象传递
   async getGoodsListInfo({ commit }, searchParams) {
-    const result = await reqGoodsListInfo(searchParams)
+    //vue传递过来的数据，用户
+     const result = await reqGoodsListInfo(searchParams)
     if (result.code === 200) {
-      commit('SECEIVE_GETGOODSLISTINFO', result.data)
+      commit('RECEIVE_GOODSLISTINFO', result.data)
     }
   }
+
 }
 
 const getters = {
-  //可以简化数据操作,计算数据
-  attrsList(state) {
-    return state.goodsListInfo.attrsList || []  //添加【】 是为了当没有数据的时候请求的不是undefined ，undefined 报错
-  },
+  //简化数据操作。
   goodsList(state) {
-    return state.goodsListInfo.goodsList || [] //添加【】 是为了当没有数据的时候请求的不是undefined ，undefined 报错
+    //一开始传一个空数组是为了防止返回一个undefined  
+    return state.goodsListInfo.goodsList || []
+  },
+  attrsList(state) {
+    return state.goodsListInfo.attrsList || []
   },
   trademarkList(state) {
-    return state.goodsListInfo.trademarkList || [] //添加【】 是为了当没有数据的时候请求的不是undefined ，undefined 报错
+    return state.goodsListInfo.trademarkList || []
   }
 }
 

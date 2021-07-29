@@ -19,6 +19,7 @@ const servise = axios.create({
 //请求拦截器
 servise.interceptors.request.use(
   (config) => {
+<<<<<<< HEAD
     //config 相当于报文， 拦截后可以修改
     NProgress.start();
     // 从user里面获取唯一标识 属性，  获取到了， 就给请求头里面设置
@@ -35,6 +36,17 @@ servise.interceptors.request.use(
     return config;
     //最后要返回
   })
+=======
+  //config 相当于报文， 拦截后可以修改
+    NProgress.start();
+    
+    // 给每个请求的headers都添加上
+    config.headers.userTempId = store.state.user.userTempId
+
+  return config;
+  //最后要返回
+})
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 
 //
 servise.interceptors.response.use(

@@ -1,7 +1,11 @@
 <template>
   <div class="swiper-container" ref="imgSwiper">
     <div class="swiper-wrapper">
+<<<<<<< HEAD
       <div class="swiper-slide" v-for="(img,index) in imageList" :key="img.id">
+=======
+      <div class="swiper-slide" v-for="(img, index) in  imageList" :key="img.id">
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
         <img :src="img.imgUrl"
           :class="{active: defaultIndex === index}"
           @click="changeDefaultIndex(index)"
@@ -19,12 +23,18 @@
   export default {
     name: "ImageList",
 
+<<<<<<< HEAD
+=======
+    props:['imageList'],
+    
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
     data(){
       return {
         defaultIndex: 0
       }
     },
 
+<<<<<<< HEAD
     props:['imageList'],
 
 
@@ -37,6 +47,18 @@
       }
     },
     
+=======
+    methods:{
+      // 点击哪个图片 就把下标传给defaultIndex  切换，
+      changeDefaultIndex(index){
+        this.defaultIndex = index
+
+        //全局事件总线   分发事件， 把当前下标给zoom
+        this.$bus.$emit('changeDefaultIndex', index)
+      }
+    },
+
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
     watch:{
       imageList:{
         immediate: true,
@@ -52,15 +74,26 @@
                     // pagination: {
                     // el: '.swiper-pagination',
                     // },
+<<<<<<< HEAD
                     slidesPerView:3,
                     slidesPerGroup: 3,
+=======
+
+                    slidesPerView: 3,
+                    slidesPerGroup: 3,
+                    
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
                     // 如果需要前进后退按钮
                     navigation: {
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
                     },
                     
+<<<<<<< HEAD
                     // // 如果需要滚动条                
+=======
+                    // // 如果需要滚动条
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
                     // scrollbar: {
                     // el: '.swiper-scrollbar',
                     // },
@@ -69,7 +102,10 @@
           }
       }
   }
+<<<<<<< HEAD
    
+=======
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
   }
 </script>
 
@@ -98,10 +134,17 @@
           padding: 1px;
         }
 
+<<<<<<< HEAD
         // &:hover {
         //   border: 2px solid #f60;
         //   padding: 1px;
         // }
+=======
+        &:hover {
+          border: 2px solid #f60;
+          padding: 1px;
+        }
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
       }
     }
 

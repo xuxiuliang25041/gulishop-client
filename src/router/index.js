@@ -2,8 +2,12 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+<<<<<<< HEAD
 import routes from '@/router/routes'
 import store from '@/store'
+=======
+import routes from './routes'
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 //声明
 Vue.use(VueRouter)
 
@@ -64,6 +68,7 @@ router.beforeEach(async(to, from, next) => {
   //token 校验的逻辑      
   //一会用户的信息是要在这进行发请求获取的  api 和store
 
+<<<<<<< HEAD
   //获取一下token  和 userInfo 用户信息 
   let token = store.state.user.token
   let userInfo = store.state.user.userInfo
@@ -98,6 +103,20 @@ router.beforeEach(async(to, from, next) => {
     next()
   }
   
+=======
+
+
+//向外暴露一个对象
+export default new VueRouter({
+  routes,
+  // 点击跳转默认坐标回调左上角（类似）  就是页面要始终回到最上面
+  scrollBehavior(to, from, savedPosition) {
+    return {
+      x: 0,
+      y: 0
+    }
+  }
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 })
 
 //向外暴露一个对象

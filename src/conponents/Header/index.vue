@@ -70,7 +70,9 @@ export default {
   //在mounted 里面 可以 做  全局事件总线 异步请求， 定时器等等， 
   mounted(){
       //接收  $bus  $on   第二个参数 回调函数
-      this.$bus.$on('clearKeyWord', () => {this.keyword = ""})
+    //   this.$bus.$on('clearKeyWord', () => {this.keyword = ""})
+        this.$bus.$on('clearSearch', () => {this.keyword = ""})
+
   },
 
 
@@ -82,6 +84,8 @@ export default {
             params : { keyword : this.keyword || undefined }
         }
         
+        
+
         if(this.$route.query){
             location.query = this.$route.query
         }

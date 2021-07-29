@@ -31,14 +31,69 @@ export const reqFloorList = () => {
   })
 }
 
-//搜索search 数据 /list   post   请求体参数   用户传的参数
+//请求search 搜索页面数据， 请求体参数   post
+
 export const reqGoodsListInfo = (searchParams) => {
   return Axios({
-    url: '/list',
-    method: 'post',
-    data: searchParams
+      url: '/list',
+      method: 'post',
+      data: searchParams
+   })
+}
+
+//测试，  一开始传一个空对象， 不能不传
+// reqGoodsListInfo({})
+
+
+///api/item/{ skuId }
+//请求商品详情
+export const reqGoodsDetailInfo = (skuId) => {
+  return Axios({
+    url: `/item/${skuId}`,
+    method: 'get'
   })
 }
+
+// 添加购物车  请求的函数
+// /api/cart/addToCart/{ skuId }/{ skuNum }
+
+export const reqAddOrUpdateShopCart = (skuId, skuNum) => {
+  return Axios({
+    url: `/cart/addToCart/${skuId}/${skuNum}`,
+    method: 'post'
+  })
+}
+
+//请求购物车列表  /api/cart/cartList  get
+export const reqCartListInfo = () => {
+  return Axios({
+    url: '/cart/cartList',
+    method: 'get'
+  })
+ }
+
+// reqCartListInfo()
+
+//切换商品选中状态 单个
+// /api/cart/checkCart/{skuID}/{isChecked}    get
+export const reqCheckOneCart = (skuId, isChecked) => {
+  return Axios({
+    url: `/cart/checkCart/${skuId}/${isChecked}`,
+    method: 'get'
+  })
+}
+
+//选中多个，改变多个状态	post  /api/cart/batchCheckCart/{isChecked}
+// skuIdList 数组 代表修改的商品id列表 请求体参数
+// isChecked 要修改的状态 1 代表选中 0 代表未选中
+export const reqCheckAllCart = (isChecked, skuIdList) => {
+  return Axios({
+    url: `/cart/batchCheckCart/${isChecked}`,
+    method: 'post',
+    data: skuIdList
+  })
+}
+<<<<<<< HEAD
 //如果要发送请求参数必须携带， 至少得是一个空的对象
 // reqGoodsListInfo({})
 
@@ -156,3 +211,23 @@ export const reqLogOut = () => {
   })
 }
 
+=======
+
+// /api/cart/deleteCart/{skuId}  删除单个 delete
+export const reqDeleteCart = (skuId) => {
+  return Axios({
+    url: `/cart/deleteCart/${skuId} `,
+    method: 'DELETE',
+  })
+}
+
+// 删除多个 DELETE / api / cart / batchDeleteCart   请求体参数skuIdList
+
+export const reqDeleteAllCart = (skuIdList) => {
+  return Axios({
+    url: `/cart/batchDeleteCart`,
+    method: 'DELETE',
+    data: skuIdList
+  })
+}
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d

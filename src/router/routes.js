@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 import Login from '@/pages/Login'
 import Home from '@/pages/Home'
 import Search from '@/pages/Search'
@@ -9,10 +12,16 @@ import ShopCart from '@/pages/ShopCart'
 
 export default [
   {
+<<<<<<< HEAD
     path: '/shopCart',
     component: ShopCart
   },
   
+=======
+    path: '/shopcart',
+    component: ShopCart
+  },
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
   {
     path: '/home',
     component: Home
@@ -37,8 +46,13 @@ export default [
       isHidden: true
     }
   },
+<<<<<<< HEAD
   {
     // 点击你得让我知道你点的是哪一个，占位，id
+=======
+
+  {
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
     path: '/detail/:skuId',
     component: Detail
   },

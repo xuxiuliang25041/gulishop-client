@@ -7,7 +7,11 @@ import home from './modules/home'
 import user from './modules/user'
 import search from './modules/search'
 import detail from './modules/detail'
+<<<<<<< HEAD
 import shopcart from './modules/shopcart' 
+=======
+import shopcart from './modules/shopcart'
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 
 Vue.use(VueX)
 

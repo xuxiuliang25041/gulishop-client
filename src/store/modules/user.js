@@ -1,3 +1,14 @@
+<<<<<<< HEAD
+=======
+
+// 保存到vuex的state里面 好调用 
+
+import { getTempid } from "@/utils/userabout"
+//值是一个函数
+const state = {
+  userTempId: getTempid()
+}
+>>>>>>> 8ab7c3510385ca309a68e465696f0e022220180d
 
 import { getUserTempId } from "@/utils/userabout"
 import {reqUserCode, reqUserRegister, reqUserLogin, reqUserToken, reqLogOut} from '@/api'
