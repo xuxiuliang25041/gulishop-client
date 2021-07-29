@@ -80,8 +80,8 @@ export default {
     //登录
     async userLogin() {
       let { phone, password } = this
-      console.log(this.phone)
-      if (phone & password) {
+      
+      if (phone && password) {
         try {
           await this.$store.dispatch('userLogin', { phone, password })
           alert('登录成功，自动跳转到首页')
