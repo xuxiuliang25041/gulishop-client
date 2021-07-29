@@ -111,6 +111,46 @@ export const reqDeleteAllCart = () => {
   })
 }
 
+//获取验证码   /api/user/passport/sendCode/{phone}  get
+export const reqUserCode = (phone) => {
+  return Axios({
+    url: `/user/passport/sendCode/${phone}`,
+    method: 'get'
+  })
+}
+
+// 注册用户 请求 /api/user/passport/register  post  请求体参数， 需要phone，code，密码password
+export const reqUserRegister = (userInfo) => {
+  return Axios({
+    url: "/user/passport/register",
+    method: 'post',
+    data: userInfo
+  })
+}
 
 
+// 请求登录 返回的正常是一个token ， /api/user/passport/login  post  请求体参数， phone。 password
+export const reqUserLogin = (userInfo) => {
+  return Axios({
+    url: '/user/passport/login',
+    method: 'post',
+    data: userInfo
+  })
+}
+
+// 请求用户信息  /api/user/passport/auth/getUserInfo  get
+export const reqUserInfo = () => {
+  return Axios({
+    url: '/user/passport/auth/getUserInfo',
+    method: 'get'
+  })
+}
+
+// /api/user / passport / logout   get  
+export const reqLogOut = () => {
+  return Axios({
+    url: '/user/passport/logout',
+    method: 'get'
+  })
+}
 

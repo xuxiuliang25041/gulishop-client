@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import routes from '@/router/routes' 
+import store from '@/store'
 //声明
 Vue.use(VueRouter)
 
@@ -39,11 +40,7 @@ VueRouter.prototype.replace = function (location, resolved, rejected) {
 }
 
 
-
-
-
-//向外暴露一个对象
-export default new VueRouter({
+const router = new VueRouter({
   //mode: 'history'
   routes,
   scrollBehavior(to, from, savedPosition) {
@@ -53,3 +50,52 @@ export default new VueRouter({
     }
   }
 })
+
+router.beforeEach(async(to, from, next) => {
+  // 一般用的都是全局前置导航守卫
+  /* 
+    to  代表的是目的地
+    from  代表的是起始位置
+    next   根据传的参数 代表是否放行和处理
+    next() 无条件放行
+    next(false) 不放行
+    next('/')   填的路径或者路由， 指定跳转到哪
+  */
+  //先写请求用户信息的api  store   所有请求头都要携带 
+  //获取token
+  let userInfo = store.state.user.userInfo
+  let token = store.state.user.token
+  //首先判断有没有token
+  if (token) {
+    //如果有 判断是不是重复点的登录
+    if (to.path === '/login') {
+      //是的话， 就让它跳到首页
+      next('/')
+    } else {
+      // 正经跳转 不是去的登录页 是其他页 判断你有没有用户信息
+      if (userInfo.name) {
+        //有放行
+        next()
+      } else {
+        try {
+          // 没有就根据token重新获取
+          await store.dispatch('getUserInfo')
+          //获取成功放行
+          next()
+        } catch (error) {
+          //失败  一律归结为token过期
+          //获取用户信息失败，清空token， localStorage也要清除
+          store.dispatch('removeToken')
+          next('/login')
+        }
+      }
+    }
+  } else {
+    //暂时都放行 写支付的时候在添加限制
+    next()
+  }
+})
+
+
+//向外暴露一个对象
+export default router

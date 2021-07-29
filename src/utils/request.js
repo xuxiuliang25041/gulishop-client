@@ -27,6 +27,9 @@ servise.interceptors.request.use(
       config.headers.userTempId = userTempId
     }
 
+    //吧token挂载在请求头上   token 就是我们的正式标识
+    config.headers.token = store.state.user.token
+
   return config;
   //最后要返回
 })
